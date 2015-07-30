@@ -1,0 +1,104 @@
+%!TEX root = main.tex
+
+\section{Numerical experiments with the linear advection equation.}
+\label{sec:task1}
+\begin{quote}
+\em The chosen schemes are Lax-Friedrichs (\texttt{LF}) and Lax-Wendroff (\texttt{LW}).
+\end{quote}
+\subsection{Exploration of scheme's stability.}
+\label{eq:11}
+\begin{quote}
+ \em The chosen scheme for this exercise is Lax-Friedrichs. The chosen signal is the triangular signal.
+\end{quote}
+
+It has been shown in assignment 2 that the stability limit is $\nu \le 1$, where $\nu$ is the Courant number. Consequently, it is expected that using $\nu > 1$ would lead to a ``blow-up'' in the numerical solution, but that respecting the stability condition would lead to a stable solution. It should be noted that stable does not necessarily mean accurate!
+
+Moreover, we know that the scheme is \emph{dissipative}, meaning that, for a stable condition, we expect the numerical solution may be a dissipated form of the exact solution. In this case, this means the amplitude of the triangular and smooth signals will be reduced.
+
+The chosen $\nu$'s are 0.8, 1.02, and 2.0. Moreover, $\Delta t = 1.0$ for all cases -- $\Delta x$ is automatically defined by $\nu$, $\Delta t$ and $a$.
+
+Plots can be found in~\Cref{app:11}.
+
+The above statement about dissipation holds: the numerical solution exhibits dissipation for $\nu = 0.8$, blows up slightly for $\nu = 1.02$ and blows up to practically infinity for $\nu = 2.0$.
+
+To conclude, caution should be exercised when choosing time step and grid size, since they directly affect $\nu$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Study of Convergence %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Study of convergence.}
+\begin{quote}
+\em Courant number of 0.9 was used.
+\end{quote}
+Plots can be found in~\Cref{app:12}.
+
+First, it can be seen that both schemes get closer to the exact solution as the grid size is increased ($\Delta x$ is decreased).
+
+Second, it can also be seen that the \texttt{LW} converges faster than \texttt{LF}. In other words, the second-order scheme, for the same courant number/grid size/time step, yields a more accurate solution than the first-order scheme.This is to be expected, since the second-order scheme should have a higher order of accuracy (see Exercise~\ref{sec:13}).
+
+It should be noted that fiddling with $\Delta t$ was not necessary, because it was treated as the ``independent variable'', yielding factors of 100. Refining $\Delta t$ also refines the grid, assuming $\nu = \text{constant}$. In other words, $\Delta t$ was chosen as 1, 0.5, 0.25, 0.125 -- which are factors of 100 -- which results in $\Delta x$ = [2.22, 1.11, 0.56,  0.28].
+
+Finally, it is interesting to note that while \texttt{LF} exhibits dissipation (as in Exercise~\ref{eq:11}), but that \texttt{LW} exhibits \emph{dispersion}, as is expected of a second order scheme.
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Order of Accuracy %%
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Determination of the global order of accuracy.}
+\label{sec:13}
+\begin{quote}
+\em Courant number of 0.8 was used.
+\end{quote}
+Plots can be found in~\Cref{app:13}. The order of accuracy $R$ is shown on the plots and in~\Cref{tab:13}.
+
+The formal order of accuracy is 1.0 and 2.0 for \texttt{LF} and \texttt{LW} respectively -- because they are respectively first and second order schemes.
+
+From the numerical solution, the order of accuracy in time and space is the same, since they vary in exactly the same way in order to keep $\nu$ constant.
+
+The formal order of accuracy was calculated using $L_2$ norm over the whole computational domain and dividing by the number of nodes:
+\begin{equation*}
+    \Vert e \Vert = \dfrac{\Vert e \Vert_2}{N^{1/2}}
+\end{equation*}
+where $N$ is the number of nodes. It should be noted that computing errors over a smaller domain, e.g. only around the disturbance, produces the same results since the numerical solution is almost 100\% accurate in the flat regions.
+
+The values of $\Delta t$ used were: [0.5, 0.25, 0.125, 0.0625]. Consequently, the values of $\Delta x$ used were: [1.$\bar{1}$, 0.$\bar{5}$, 0.2$\bar{7}$, 0.13$\bar{8}$].
+%
+\noindent\par
+\noindent\makebox[\textwidth][c]{%
+    \begin{minipage}{0.8\textwidth}
+    \par
+        \begin{table}[H]
+            \centering
+            \caption{Orders of accuracy of first and second order scheme for a triangular and a smooth signal. $\nu$ = 0.8.}\label{tab:13}
+            \begin{tabular}{@{}*{3}{c}@{}}
+            \toprule
+            Scheme & Triangular Signal & Smooth Signal\\
+            \midrule
+            Lax-Friedrichs & 0.28 & 0.60\\
+            Lax-Wendroff & 0.31 & 1.80\\
+            \bottomrule
+            \end{tabular}
+        \end{table}
+    \end{minipage}
+}\\[1cm]
+%
+The following can be said about the obtained actual orders of accuracy:
+\begin{itemize}[nolistsep]
+    \item The actual order of accuracy depends on the signal; higher orders of accuracy were obtained for the smooth signals in both cases.
+    \item \texttt{LW} has a higher order of accuracy than \texttt{LF} for both signals, although the difference is only 0.03 for the triangular signal, compared to 1.20 for the smooth signal.
+    \item The actual order of accuracy is always lower than the formal one. This makes sense with the theory! Consequently, using a second-order scheme -- for instance -- \emph{does not guarantee} second-order order of accuracy. However, there's a good chance that the order of accuracy will be higher than for a first-order scheme.
+    \item Discontinuities in the signal cause the actual order of accuracy to be much smaller than the formal one. In other words, the actual order of accuracy is lower for the triangular signal than the smooth signal -- regardless of the scheme.
+\end{itemize}
+
+\subsection*{Note}
+I've been able to fix the mistake thanks to the extension I've been given. For the record, and maybe some other students have made the same mistake, all that was wrong was the calculation of actual order of accuracy.
+
+The following was used to calculate the order of accuracy:
+\begin{equation*}
+\Vert e \Vert = \dfrac{\text{\bf norm}(\Delta u)}{N}
+\end{equation*}
+where \textbf{norm()} calculates the Frobenius norm. However, I noticed from the notes that $N$ actually needs to be included in the norm calculation.
+\begin{equation*}
+\Vert e \Vert = \dfrac{\text{\bf norm}(\Delta u)}{N^{1/2}}
+\end{equation*}
+

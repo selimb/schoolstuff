@@ -1,0 +1,9 @@
+#!/bin/bash
+FILENAME=MECH516_Project2_260450544
+rm docs/*.pdf
+rm docs/*.zip
+cp mini_project_2_tex/main.pdf docs/$FILENAME.pdf
+cd docs
+pdftk $FILENAME.pdf cat 8-end output ${FILENAME}_APPENDIX.pdf
+pdftk $FILENAME.pdf cat 1-7 output ${FILENAME}_REPORT.pdf
+7z a NEW_$FILENAME.zip *.pdf

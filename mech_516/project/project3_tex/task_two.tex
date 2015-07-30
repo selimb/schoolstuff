@@ -1,0 +1,38 @@
+%!TEX root = main.tex
+
+\section{Numerical simulation of a practical problem: blast wave interaction with an obstacle (wall).}
+
+\begin{quote}
+\em \centering The VanLeer limiter was chosen as a result of a compromise between accuracy and potential oscillations, which are bound to occur in this Task.
+\end{quote}
+It should also be noted that the Courant number was fixed at 0.8 and that 6 ghost control volumes were used (three on either side).
+
+\subsubsection{Grid Information}
+A grid was constructed from $x=0.001$ to $x=1.501$. Fifteen (15) nodes were included in the initial pressure region. The end time was set to 0.5.
+
+\subsection{Pressure and Density Distribution}
+
+A video was captured and can be found at \url{https://youtu.be/8LoSgmQwReQ}. The blast wave is very obvious: the propagating shock hits the wall and bounces back but creating a large pressure wave. The pressure distribution makes sense, as the pressure spikes when the shock hits the wall and bounces off, leaving a high pressure region behind it. The density distribution is acting weird at the last node and I'm not sure why.
+
+The simulation shown in the video uses only 151 nodes.
+
+\subsection{Pressure History}
+Pressure history was queried for $x=1.351$. It was ensured that this point always be a part of the grid! This proved to be problematic at first; one must exercise care when picking a point to query and then modifying the grid. The number of nodes $N$, excluding ghost cells, varied from 51 to 1001 with increments of 50. The results are plotted in~\Cref{fig:task2_peaks}.
+
+The relative difference in maximum pressure peak between consecutive simulations was also calculated 1\%. The relative difference was calculated as:
+\begin{equation}
+    \epsilon_i = \dfrac{\big| \hat{P_i} - \hat{P_{i-1}} \big|}{\dfrac{\hat{P_i} + \hat{P_{i-1}}}{2}}
+\end{equation}
+where $\hat{P_i}$ is the maximum pressure for a given number of nodes.
+
+It was found that $\epsilon(1000)$, the relative change for 1000 when compared to 950, was under 5\%. This could be considered low enough. The maximum peak pressure for this mesh is 91.
+
+It is interesting to note that the strength of the blast at the wall diminishes as the mesh is refined. One could also have performed a study on increasing the number of ghost cells -- this was not done here.
+%
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{./figs/task2_peaks}
+    \caption{Evolution of highest peak with mesh refinement}\label{fig:task2_peaks}
+\end{figure}
+%
+

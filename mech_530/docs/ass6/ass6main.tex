@@ -1,0 +1,34 @@
+\documentclass{article} %Options : [NoTitlePage][Custom][Bib][Nomencl]
+\usepackage{booktabs,colortbl}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage[letterpaper, height=245mm, width=185mm]{geometry}
+
+\begin{document}
+% \mytitlepage
+%Begin writing here. Remember, cleveref is enabled. Use \Cref. 
+\renewcommand{\arraystretch}{1.2}
+\appendix
+% \pagenumbering{none}
+\thispagestyle{empty}
+\section{Design 1}
+\subsection{Stresses and Strains}
+\input{./design1/stresstable}
+\subsection{Safety Factors}
+\input{./design1/safetytable}
+\section{Design 3 -- Load Case I}
+\thispagestyle{empty}
+\subsection{Stresses and Strains}
+\input{./design3/stresstable_1}
+\subsection{Safety Factors}
+\thispagestyle{empty}
+\input{./design3/safetytable_1}
+\section{Design 3 -- Load Case II}
+\subsection{Stresses and Strains}
+\thispagestyle{empty}
+\input{./design3/stresstable_2}
+\subsection{Safety Factors}
+\thispagestyle{empty}
+\input{./design3/safetytable_2}
+
+\end{document}

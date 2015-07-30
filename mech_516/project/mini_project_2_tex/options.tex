@@ -1,0 +1,39 @@
+%!TEX root = main.tex
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Additional Packages/Options %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \setlist{nosep}
+% \hypersetup{hidelinks}
+\usepackage{pdflscape}
+\usepackage{titlesec}
+\usepackage{abstract}
+\usepackage{listings}
+
+%%%%%%%%%%%%%%%%%
+% Title Options %
+%%%%%%%%%%%%%%%%%
+\usepackage{mypage}
+\school{McGill University}
+\course{Computational Gasdynamics}
+\coursenum{MECH 516}
+%Add \\[0.3cm] for new line.
+\title{Mini-Project 2}
+\student{Selim \textsc{Belhaouane}}
+\studentnum{260450544}
+\date{\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Additional Formatting %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%Horizontal line below section.
+\sectionfont{\sectionrule{0pt}{0pt}{-5pt}{0.8pt}}
+%Section numbering depth. Value of 2 means numbering ends with subsections.
+\setcounter{secnumdepth}{2}
+%Table of contents section depth. Same as above.
+\setcounter{tocdepth}{2}
+% \numberwithin{equation}{subsection}
+\numberwithin{figure}{subsection}
+\titleformat{\section}[block]{\normalfont\large\bfseries}{Task \thesection.}{0.5em}{}
+\titleformat{\subsection}[block]{\normalfont\large}{Exercise \thesubsection.}{0.5em}{}
+\renewcommand{\abstractname}{}

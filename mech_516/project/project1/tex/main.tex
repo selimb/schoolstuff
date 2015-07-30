@@ -1,0 +1,32 @@
+%Options : [NoTitlePage][Custom][Bib][Nomencl]
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\begin{document}
+\mytitlepage
+\section{Code}
+Code is hosted on \href{https://github.com/Kreger51/mech_516/tree/master/project/gasdynamics}{GitHub}\footnote{Selim Belhaouane, MECH 516 Project, (2015), GitHub Repository, \url{https://github.com/Kreger51/mech_516/tree/master/project/gasdynamics}}. GitHub automatically provides syntax-highlighting, which makes code easier to read. 
+
+\section{Report}
+All plots can be found on the next page. For the first plot of each Problem, an x-t diagram with the associated waves is shown. The legend is as follows:
+\begin{description}[nolistsep]
+    \item [Contact Surface:] Black dashed line.
+    \item [Shockwave:] Red solid line.
+    \item [Rarefaction Wave:] Five blue solid lines. The outer/inner lines represent the tail and the head. 
+    \item [The green horizontal dashed line] shows at what time results are sampled.
+\end{description}  
+Moreover, the intersections with waves are shown and span all graphs. 
+
+Regarding left-facing and right-facing waves, one needs only look at where the contact surface is: if the wave is to the left of the contact surface, the wave is left-facing and vice-versa. For conciseness, here is the breakdown of waves for each problem:
+\begin{description}[nolistsep]
+    \item [Problem 1:] Left-facing expansion fan and right-facing shock.
+    \item [Problem 2:] Left-facing AND right-facing expansion fan.
+    \item [Problem 3:] Left-facing expansion fan and right-facing shock.
+\end{description}
+\newpage
+\includepdf{figs./plots}
+
+% \bibliographystyle{IEEEtran}
+% \bibliographystyle{plain}
+% \bibliography{dabib}
+\end{document}

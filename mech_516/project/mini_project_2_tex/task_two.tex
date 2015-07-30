@@ -1,0 +1,59 @@
+%!TEX root = main.tex
+\section{Numerical experiments with the Euler equations.}
+\begin{quote}
+\em The chosen schemes are Godunov, Roe and McCormack.
+\end{quote}
+As per the instructions, $\Delta x$ = 1. The Courant number was chosen to be constant 0.9 for \emph{most} of the simulation, so as to satisfy the CFL condition. The Courant number for Euler equations is given in~\Cref{eq:courant_euler}.
+\begin{equation}
+    \label{eq:courant_euler}
+    \nu = \dfrac{\Delta t}{\Delta x}\cdot\mathrm{max}(|\lambda|)
+\end{equation}
+where $\mathrm{max}(|\lambda|)$ is the absolute maximum eigenvalue across all nodes. Since this value may change between iterations, the time step needs to be recalculated for every iteration in time:
+\begin{equation}
+    \Delta t = \dfrac{\nu\cdot\Delta x}{\mathrm{max}(|\lambda|)}
+\end{equation}
+However, results are requested for $t = 25$ exactly. Thus, the Courant number may be ``un-fixed'' in order to achieve a time step that satisfies the final $t$ requirement. The Courant numbers resulting from this were 0.89, 0.12 and 0.87 for the Godunov, Roe and McCormack simulations, respectively. It is good that they satisfy the CFL condition.
+
+Density, velocity and pressure plots can be found in~\Cref{app:2}. The Riemann problem is illustrated in~\Cref{fig:riemann}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{./figs/riemann}
+    \caption{Task 2 Riemann Representation.}\label{fig:riemann}
+\end{figure}
+\Cref{tab:task2} tabulates computational cost and accuracy for each scheme. Cost was measured in milliseconds taken to complete the simulation. The accuracy was measured by calculating the errors for each primitive between a given scheme and the exact solution with a method similar to the one in Task 1, and averaging the three returned errors. In other words:
+\begin{align*}
+    e &= \dfrac{e_\rho + e_u + e_p}{3}
+\end{align*}
+where $e_\rho$, $e_u$, $e_p$ are the errors for density, velocity and pressure respectively and are calculated as in Task 1.\\[-3mm]
+\noindent\hrulefill\par
+\noindent\makebox[\textwidth][c]{%
+    \begin{minipage}{0.8\textwidth}
+    \hrulefill\par
+    \begin{table}[H]
+        \ra{0.8}
+        \caption{Relative Accuracy and Cost for three chosen schemes. Error uses averaged $L_2$ norm and is averaged across primitive variables.}
+        \label{tab:task2}
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            Scheme & Error & Cost\\
+            \midrule
+            Godunov & 1 & 1\\
+            Roe & 1 & 0.02\\
+            McCormack & 0.77 & 0.23\\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+    \end{minipage}%
+}\\[1cm]
+\noindent From~\Cref{tab:task2}, the following can be said:
+\begin{description}
+    \item [First Order:]\hfill \\
+    Godunov and Roe have similar accuracy. However, the computation cost of Godunov's scheme is \emph{huge} -- Roe's scheme takes 2\% of the time. This gap could be further increased if the program was parallelized -- Godunov's scheme performs very poorly because of all the conditionals. As a side note, programmer time of Godunov's scheme is also much larger, since an exact Riemann solver needs to be implemented -- Roe's scheme is fairly straightforward.
+    \item [Godunov vs. McCormack:]\hfill\\
+    While the gap in computation cost is not as large between these two schemes, the second order scheme is certainly more accurate -- the error is reduced by 23\%.
+    \item [Roe vs. McCormack:]\hfill\\
+    Roe's scheme is about 10 times as fast as McCormack's, however the latter is more accurate.
+    \item [First Order vs. Second Order:]\hfill\\
+    As in Task 1, it can be seen that second order schemes are dispersive and that first order schemes are dissipative. The former provides more accuracy in both cases. Thus, if one were to switch from Godunov to either a first-order or second-order scheme, the question to ask would be: ``Do you want low computation time or accuracy?''
+\end{description}

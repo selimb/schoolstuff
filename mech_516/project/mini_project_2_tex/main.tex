@@ -1,0 +1,24 @@
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\begin{document}
+\mytitlepage
+% \tableofcontents
+\newpage
+% Begin writing here.
+\begin{abstract}\em
+Code is hosted on \href{https://github.com/Kreger51/mech_516/tree/master/project}{GitHub}~\cite{code}. The Euler equation schemes are in \texttt{euler/schemes.py}, the linear schemes are in \texttt{linear/schemes.py}, \texttt{linear/solvers.py} and the Riemann solver is in \texttt{riemann/*}. Because of time constraints, this is far from the cleanest and most efficient code I've ever written. You can view how the code is used and implemented by viewing the \href{http://nbviewer.ipython.org/github/Kreger51/mech_516/tree/master/project/}{IPython Notebooks}~\cite{notebook}.
+\end{abstract}
+\input{./task_one}
+\input{./task_two}
+\bibliographystyle{IEEEtran}
+\bibliography{dabib}
+\newpage
+\newgeometry{margin=1.2cm}
+\pagestyle{empty}
+\appendix
+\titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}[block]{\normalfont\large}{\thesubsection.}{0.5em}{}
+\input{./appendix_one}
+\input{./appendix_two}
+\end{document}

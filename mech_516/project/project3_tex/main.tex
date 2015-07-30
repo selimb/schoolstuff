@@ -1,0 +1,23 @@
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\begin{document}
+\mytitlepage
+% \tableofcontents
+\newpage
+% Begin writing here.
+\begin{abstract}\em \centering
+Code is hosted on \href{https://github.com/Kreger51/mech_516/tree/master/project}{GitHub}~\cite{code}.
+\end{abstract}
+\input{./task_one}
+\clearpage
+\input{./task_two}
+\bibliographystyle{IEEEtran}
+\bibliography{dabib}
+\newpage
+\newgeometry{margin=1.2cm}
+\pagestyle{empty}
+\appendix
+\titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}[block]{\normalfont\large}{\thesubsection.}{0.5em}{}
+\end{document}
