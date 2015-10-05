@@ -1,0 +1,19 @@
+Requirements
+------------
+A fortran compiler, e.g. gfortran.
+
+Compile
+-------
+If using gfortran, you can just run:
+$ make
+otherwise, compile 'cholesky.f90' with your favorite compiler.
+
+Run
+---
+By default, compilation produces 'a.out'. Just run:
+$ ./a.out
+You will be prompted to enter the value for n.
+Alternatively, you can run the program by piping
+the desired value of n to the executable:
+$ echo "2" | ./a.out
+The results are printed to stdout.
