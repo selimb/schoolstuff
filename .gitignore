@@ -1,5 +1,7 @@
 # Documentation for assignments
 docs/
+*.pdf
+
 #### joe made this: http://goel.io/joe
 
 #####=== IPythonNotebook ===#####
