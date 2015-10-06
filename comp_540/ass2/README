@@ -1,0 +1,19 @@
+Directories
+-----------
+q2 : Code for Cholesky Factorization in Question 2.
+q3 : Code for LU Factorization with PP in Question 3.
+
+Requirements
+------------
+A fortran compiler, e.g. gfortran.
+
+Compile
+-------
+If using gfortran, cd into desired directory and run:
+$ make
+
+Run
+---
+By default, compilation produces 'a.out'. Just run:
+$ ./a.out
+The results are printed to stdout.
