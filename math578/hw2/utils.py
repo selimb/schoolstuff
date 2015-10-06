@@ -1,5 +1,7 @@
 import numpy as np
 from matplotlib.ticker import AutoMinorLocator
+import sympy as sp
+import IPython.display as disp
 
 def pi_plot(ax, pi1, pi2):
     a = np.pi*pi1
@@ -50,3 +52,5 @@ def showoff(ax, all_x, f, fp):
     ax.set_xticklabels(tick_labels, fontsize=16, verticalalignment='top')
     ax.set_yticks([0])
 
+def printsp(x, n):
+    return disp.Math('%s = %s' % (n, sp.latex(x)))
