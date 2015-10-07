@@ -54,3 +54,21 @@ def showoff(ax, all_x, f, fp):
 
 def printsp(x, n):
     return disp.Math('%s = %s' % (n, sp.latex(x)))
+
+def arr2tex(A, headers):
+    def row2tex(row, fmt):
+        return ' & '.join([fmt % x for x in row])
+
+    prec = np.get_printoptions()['precision']
+    fmt = '%%.%df' % prec
+    assert A.shape[1] == len(headers)
+    n = len(headers)
+    tex = r'\begin{tabular}{@{}%s@{}}' % ('l' * (n + 1)) + '\n'
+    tex += r'\toprule' + '\n'
+    tex += r'Iteration & %s \\' % (' & '.join(headers)) + '\n'
+    tex += r'\midrule' + '\n'
+    for i, row in enumerate(A):
+        tex += r'%d & %s \\' % (i, row2tex(row, fmt)) + '\n'
+    tex += r'\bottomrule' + '\n'
+    tex += r'\end{tabular}' + '\n'
+    return tex
