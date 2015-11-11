@@ -1,47 +1,26 @@
-function point = solve(points, a_norm)
-    cvx_begin quiet
-        variable x(2)
-        minimize (norm(
-end
-%% Input data
+% TODO
+% - Use CVX
+% - Generate data
+% - 2-3 functions with different data. Plot them all at the same time. Fuck it.
+function q13main(X)
+    X = [0 0; 0 1; 0 -1; 10 0];
+    x = zeros(3, 2);
 
-points =
-norms = [1, 2, inf];
-num_norms = length(norms);
-best_x = zeros(1, num_norms);
+    x = [2 0; 2 1; 2 -1];
 
-%% Construct polynomial for each norm and evaluate maximum norm of residual.
-for i = 1 : num_norms
-    cvx_begin quiet
-        variable x
-        minimize (norm(M*x - b, norms(i)))
-    cvx_end
-    best_x(i) = x;
-end
+    norms = [1, 2, inf];
+    styles = ['rs'; 'gd'; 'bx'];
+    styles = cellstr(styles);  % Yay MATLAB...
+    labels = [];
 
-%% Brute force
-x = linspace(-5, 5, 101);
-norm_results = zeros(num_norms, length(x));
-
-for i = 1 : length(x)
-    r = M*x(i) - b;
-    for n = 1 : num_norms
-        norm_results(n, i) = norm(r, norms(n));
+    figure
+    hold on
+    for i = 1 : 3
+        plot(x(i, 1), x(i, 2), styles{i});
     end
+    legend('1-norm', '2-norm', 'inf-norm')
+    grid('off')
+    set(gca,'xtick',[])
+    set(gca,'ytick',[])
+    plot(X(:, 1), X(:, 2), 'ok')
 end
-
-%% Output and plot
-fprintf(1, 'The best x according to CVX are:\n')
-disp(best_x)
-
-legend_names = cell(1, num_norms);
-figure
-hold on
-for n = 1 : num_norms
-    plot(x, norm_results(n, :))
-    legend_names{n} = sprintf('%s norm', num2str(norms(n)));
-end
-legend(legend_names, 'Location', 'North')
-xlabel('$x$', 'interpreter', 'latex')
-ylabel('$||r||$', 'interpreter', 'latex')
-title('Variation of residual with $x$ for different norms', 'interpreter', 'latex')
