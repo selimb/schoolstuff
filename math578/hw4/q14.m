@@ -9,7 +9,7 @@ cvx_begin quiet
     maximize (t)
     c'*U - b >= t;
     c'*V - b <= -t;
-%   norm(c) <= 1;
+    norm(c) <= 1;
 cvx_end
 
 %% Plot

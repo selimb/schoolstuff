@@ -60,25 +60,31 @@ def pi_plot(ax, pi1, pi2):
     ax.xaxis.set_minor_locator(minor_locator)
     ax.grid(which='major')
 
-def f(x, t):
+def f1(x, t):
     return np.array([
         -x[1],
          x[0],
     ])
 
+def f2(x, t):
+    r = np.sqrt(x[0]**2 + x[1]**2)
+    return f1(x, t)/r
 
+
+fig, axes = plt.subplots(nrows=2, figsize=(15, 15))
+funcs = [f1, f2]
 times = np.linspace(0, np.pi*5, 100)
 x0 = np.array([1, 0])
-y = scipy.integrate.odeint(f, x0, times)
-fig, ax = plt.subplots(figsize=(12, 8))
-for solver in solvers:
-    name = solver.func_name
-    y = solver(f, x0, times)
-    ax.plot(times, y[:, 1], label=name)
-ax.plot(times, np.sin(times), 'k--', label='analytical')
-pi_plot(ax, 0, 5)
-ax.legend(fancybox=True, loc='best')
-ax.set_xlabel('$t$')
-ax.set_ylabel('x(t)')
-ax.set_title('Comparison of various ODE solvers')
+# y = scipy.integrate.odeint(f, x0, times)
+for i, (ax, f) in enumerate(zip(axes, funcs)):
+    for solver in solvers:
+        name = solver.func_name
+        y = solver(f, x0, times)
+        ax.plot(times, y[:, 1], label=name)
+    ax.plot(times, np.sin(times), 'k--', label='analytical')
+    pi_plot(ax, 0, 5)
+    ax.set_ylabel('$y(t)$')
+    ax.set_title('$F_%d$' % (i + 1))
+axes[0].legend(fancybox=True, loc='best')
+axes[1].set_xlabel('$t$')
 plt.show()
