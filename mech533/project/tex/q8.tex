@@ -1,0 +1,112 @@
+\title{Low-Reynolds-Number Airfoils}
+\author{}
+\date{}
+\maketitle
+This summary is divided into sections corresponding to the sections in the paper.
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Background}
+\label{sub:Background}
+Airfoil design is a crucial part of any aeronautical application due to its contribution to
+both lift and drag. The optimal airfoil shape largely depends on the application, more
+precisely the size and speed of the wing as well as the fluid properties. Due to the
+relatively large number of factors, it is convenient to use a dimensionless quantity to
+characterize the flow: this quantity is precisely the Reynolds number.
+
+The Reynolds number is defined as $\mathrm{Re} = Vc/\nu$, where $V$ is the flight speed, $c$ is the
+chord and $\nu$ is the fluid's kinematic viscosity. Thus, instead of referring to specific
+applications, e.g. a model airplane with a cruising speed of 10 m/s at 15,000 ft. altitude,
+we can simply state that the Reynolds is around $10^5$. Moreover, this allows the engineer
+to perform experiments with reduced-size models -- all he has to do is ensure that the
+dimensionless quantity is the same. Finally, the Reynolds number is used to characterize different
+flow regimes, namely laminar and turbulent flow; the larger the Reynolds number, the more turbulent
+the flow is.
+
+\subsection{Motivation}
+\label{sub:Motivation}
+It is well known that airfoils perform better in the turbulent regime due to the resistance to flow
+separation, this will be discussed further in~\Cref{sec:fluidmechanics}.
+At the time the article was written, most of the research effort went into designing airfoils for the
+latter regime and some fairly impressive results were obtained. In other words, the design of airfoils
+for high Reynolds number (above $10^6$) was not a challenge anymore.
+
+However, developments in small remotely piloted vehicles (RPVs) was on the rise, and these vehicles
+need to perform at much lower Reynolds numbers -- hence the article's title. More precisely, low Reynolds
+numbers are taken to be in the range of $10^4 - 10^6$.
+
+This begs the question. How does one measure an airfoil's performance? A convenient parameter is the
+lift-to-drag ratio $C_L/C_D$, where higher values are desirable.
+
+\section{Fluid Mechanics}
+\label{sec:fluidmechanics}
+This section aims to provide a summary of the physics governing flow around an airfoil,
+namely flow separation, the different characteristics of turbulent and laminar flow,
+flow regime transitions, reattachment and stall.
+A thorough analysis of each of these is beyond the scope of this text, consequently
+only the key points are underlines.
+
+\subsection{Flow Separation}
+Separation is typically due to fluid velocity near the wall boundary switching directions, which creates
+a circulation bubble.  All airfoils have regions of lower-than-static pressure, usually on the lifting surface.
+Flow in that region must inevitably return to free-stream conditions at the trailing edge, which leads
+to an adverse pressure gradient. Since velocity and momentum are diminished near the wall, it may occur
+that the fluid in that region is reduced up to the point where it starts flowing in the opposite direction,
+which results in recirculation in said region.
+
+\subsection{Turbulent vs. Laminar}
+It was mentioned above that turbulent flow is more resistant to flow separation. This is due to one of the main
+differences between the two regime: the velocity gradient perpendicular to the wall direction. This gradient is
+much higher in turbulent flow. Thus, it is harder for the latter flow to undergo a velocity reversal. Again,
+the performance of low-Reynolds-number airfoils is entirely due to this distinction.
+
+\subsection{Flow Regime Transition}
+Provided there is no separation, flow over a solid boundary always increases in Reynolds number. Thus, it is
+possible for initially laminar flow to undergo a transition to turbulent flow. The location of this transition
+is of great interest to airfoil designers because of the reasons mentioned above. Specifically, one would
+want transition to occur upstream of severe adverse pressure gradients.
+
+\subsection{Reattachment}
+After laminar separation, the flow may transition to being turbulent, in which case reattachment of the
+boundary layer can occur. This forms a separation bubble. The distance from separation to reattachment
+is dictated by the Reynolds number. In some cases, the airfoil is too short for reattachment to occur. The higher
+the Reynolds number, the less distance is required to reattach.
+
+\subsection{Stall}
+Stall is a phenomenon that occurs when the separation bubble extends so far that reattachment no longer occurs -- this
+is also referred to as a separation bubble burst. This typically happens due to an overly high angle of attack. Stall has
+severe consequences on performance and should be avoided at all costs.
+
+\section{Experimental Testing of Airfoils}
+Airfoil testing in low Reynolds number conditions is difficult for the following key reasons:
+\begin{itemize}[noitemsep, nolistsep]
+    \item While we would like to perform a two-dimensional analysis, flow is inherently three-dimensional.
+    \item Small changes can trigger large effects in the regions of interest: stall and separation.
+    \item Wall effects pose problems in wind-tunnel testing.
+    \item In free-flight testing, it is a challenge to isolate airfoil performance from the rest of the glider.
+    \item The model shape may not be true.
+\end{itemize}
+Consequently, it is frequent for tests in different facilities yield different results for the same airfoil shape.
+
+\section{Theoretical Design of Airfoils}
+Analytic methods involving conformal transformations as well as numerical computations can be used
+to reliably predict airfoil performance, provided no separation occurs. There are two main techniques to
+design an airfoil. The first is referred to as \emph{direct procedure}, where for a given airfoil shape
+the pressure field is determined. The second is referred to as \emph{inverse procedure} and consists of
+determining the airfoil shape given a required pressure field. The latter method has proved to be
+more successful.
+
+However, the successful designs have mostly been for high Reynolds number airfoils. In other words, there was still
+work to be done when it came to low Reynolds number at the time the article was written.
+
+\section{Special-Purpose Airfoils}
+In this section, the author highlights some applications requiring peculiar airfoil shapes. In the first case, a
+flap was needed to ensure acceptable performance in all regimes encountered by the airfoil. In the second, the constraint
+was purely geometrical: most of the upper part of the airfoil had to be completely flat; airfoil performance
+was improved by tweaking the nose and undersurface.
+
+\section{Parting Comments}
+The author explains how knowledge in the fluid mechanics field has improved, which should hopefully lead to
+better designs in the future. I believe his hopes came true.
+\label{sec:Parting Comments}
+
