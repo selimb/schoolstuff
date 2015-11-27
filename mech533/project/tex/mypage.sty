@@ -1,9 +1,5 @@
-
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{mypage}
-\RequirePackage{setspace}
-\RequirePackage{geometry}
-\RequirePackage{graphicx}
 \RequirePackage{setspace}
 
 \def\school#1{\gdef\@school{#1}}
@@ -22,7 +18,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand\mytitlepage{
 \begin{titlepage}
-\newgeometry{height=245mm, width=170mm}
 \setstretch{1.0}
 % Defines a new command for the horizontal lines, change thickness here
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
@@ -80,7 +75,5 @@
 \vfill % Fill the rest of the page with whitespace
 %
 \end{titlepage}
-\restoregeometry
 }
 \endinput
-
