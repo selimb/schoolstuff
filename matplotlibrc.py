@@ -5,10 +5,11 @@
 import matplotlib
 
 params={
-    'axes.labelsize' : 14,
-    'axes.titlesize' : 16,
+    'axes.labelsize' : 18,
+    'axes.titlesize' : 18,
     'legend.fontsize' : 14,
     'legend.fancybox' : True,
     'legend.framealpha' : 0.5,
+    'legend.loc' : 'best',
 }
 matplotlib.rcParams.update(params)
