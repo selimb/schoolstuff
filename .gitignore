@@ -1,3 +1,6 @@
+# MATLAB binary files
+*.mat
+
 # Documentation for assignments
 docs/
 *.pdf
