@@ -1,5 +1,6 @@
-# MATLAB binary files
+# MATLAB/Numpy binary files
 *.mat
+*.npy
 
 # Documentation for assignments
 docs/
