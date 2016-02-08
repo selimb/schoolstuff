@@ -1,0 +1,80 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{cleveref}
+
+\begin{document}
+
+\section{Variatonal methods}
+\subsection{Why use weighted-integral statements?}
+We typically seek to approximate quantities with solutions of the form:
+\begin{equation}
+u(x) \approx U_N(x) = \sum_{j+1}^N c_j \phi_j (x) + \phi_0 (x)
+\end{equation}
+where we \textit{choose} $\phi_j$. Consequently, $U_N$ is known if $c_j$ are known.
+
+However, requiring $U_N$ to satisfy the differential equation at any point in the domain
+is not generally possible, otherwise we would've found the exact solution. Moreover, we
+only have one equation to work with, whereas we have $j$ constants to determine.
+
+On the other hand, we can require $U_N$ to satisfy the equation in a weighted-integral sense:
+$$
+\int_\Omega w(x) R dx = 0
+\label{eq:weighted-integral}
+$$
+We can now obtain as many linearly independent equations as there are linearly independent
+functions for $w(x)$.
+
+Note that the exact analytical solution will satisfy the above equation for any choice of
+$w$.
+\subsection{Why Weak Form?}
+\label{sec:weakform}
+Suppose \Cref{eq:weighted-integral} looks like this:
+$$
+0 = \int_\Omega w(x) \left[ -\frac{d}{dx} \left(a \frac{du}{dx} \right) - f \right] dx
+$$
+This is equivalent to the differential equation but does not include any boundary conditions.
+Moreover, our function $u$ needs to be twice differentiable.
+
+Let's look at the weak form:
+$$
+0 = \int_\Omega \left( a \frac{dw}{dx}\frac{du}{dx} - wf \right) dx
+- \underbrace{\left[ wa \frac{du}{dx} \right]^L_0}_\text{Boundary Condition}
+$$
+
+Now, the weak form reduces the differentiability requirement on $u$. In addition, the natural
+boundary conditions are included in the weak form, thus our choice of $U_N$ must only satisfy
+the essential boundary conditions!
+
+The weak form is obtained in three steps (starting from the differential equation)
+\begin{enumerate}
+    \item Obtain weighted-integral form.
+    \item Integrate by parts to distribute differentiation between $w$ and $u$.
+    \item Apply required BC to the boundary term.
+\end{enumerate}
+Finally, the principle of minimum total potential energy and the weak form are equivalent
+mathematically (apparently).
+
+\subsection{Ritz vs. Weighted-Residual}
+The Ritz method is \textbf{NOT} a special case of the weighted residual method. Ritz uses
+the weak form.
+
+Functions $U_N$ chosen in weighted-residual methods must satisfy the natural and essential BCs,
+whereas Ritz only needs to satisfy the natural BCs since essential BCs are included in the
+weak form.
+
+It should be noted that one can formulate an FEM problem using any method, whether it be
+least-squares, Ritz (also known as weak-form Galerkin).
+
+\subsection{Why do we need to take the variation?}
+We really shouldn't worry about this anymore. You can arrive at the weak form using
+the principle of minimum total potential energy -- which uses variations -- or from the
+differential equation using the steps in~\Cref{sec:weakform}
+
+\subsection{Why FEM?}
+Chosen functions $U_N$ are required to satisfy BCs of the problem. This is fine for simple
+geometries or in 1-D, but is near impossible for complex geometries. FEM allows us to split
+the domain into multiple simple domains and satisfy the equations over each domain. Boundary
+conditions for the divided elements come from the problem's BCs and the continuity requirement.
+\end{document}
