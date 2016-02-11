@@ -1,3 +1,6 @@
+# Data Files
+*.dat
+
 # MATLAB/Numpy binary files
 *.mat
 *.npy
