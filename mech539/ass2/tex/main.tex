@@ -1,0 +1,78 @@
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\newcommand{\pdiff}[2]{\ensuremath{
+    \frac{\partial #1}{\partial #2}
+}}
+\newcommand{\ip}{\ensuremath{_{i+1,j}}}
+\newcommand{\im}{\ensuremath{_{i-1,j}}}
+\newcommand{\jp}{\ensuremath{_{i,j+1}}}
+\newcommand{\jm}{\ensuremath{_{i,j-1}}}
+\begin{document}
+\mytitlepage
+% \tableofcontents
+\newpage
+% Begin writing here.
+\section{Governing Differential Equation}
+The Laplace equation in two dimensions is given by:
+\begin{equation}
+    \label{eq:laplace}
+    \frac{\partial^2 u}{\partial x^2} + \frac{\partial^2 u}{\partial y^2} = 0
+\end{equation}
+The boundary conditions are:
+\begin{gather*}
+    u(x,0) = u(0,y) = u(1,y) = 0\\
+    u(x,1) = 1
+\end{gather*}
+
+\section{Question 1}
+\begin{quote}
+    \textit{
+     Derive the truncation error for the second-order finite-difference spatial discretization
+     for the Laplace equation.}
+\end{quote}
+A second-order finite-difference spatial discretization for a second derivative is given by:
+\begin{equation}
+    \label{eq:secord}
+    \pdiff{^2u}{x^2} = \frac{u\ip^n - 2 u_{ij}^n + u\im^n}{\Delta x^2}
+\end{equation}
+Thus, plugging~\Cref{eq:secord} into~\Cref{eq:laplace} yields the following discretization:
+\begin{equation}
+    \label{eq:laplacediscrete}
+    \frac{u\ip^n - 2 u_{ij}^n + u\im^n}{\Delta x^2}
+    + \frac{u\jp^n - 2 u_{ij}^n + u\jm^n}{\Delta y^2} = 0
+\end{equation}
+Now, we substitute each term by its Taylor series expansion into~\Cref{eq:laplacediscrete} to obtain
+the modified equation:
+\begin{equation*}
+    \label{eq:te}
+    u_{xx} + u_{yy} =
+    \underbrace{
+        - \frac{1}{12}\left(u_{xxxx}\Delta x ^2 + u_{yyyy}\Delta y^2 \right)
+        + O(\Delta x^4, \Delta y^4)
+    }_{\text{Truncation Error}
+\end{equation*}
+Note the leading error terms are a function of $\Delta x^2, \Delta y^2$, hence the scheme being
+second-order accurate.
+\section{Question 2}
+\begin{quote}
+    \textit{Derive the modified equation for the scheme and note whether the error is dissipative,
+    dispersize, or a combination of the two. Explain why?}
+\end{quote}
+As derived in the previous question, the truncation error is given by:
+$$
+    \frac{1}{12}\left(u_{xxxx}\Delta x ^2 + u_{yyyy}\Delta y^2 \right)
+    + O(\Delta x^4, \Delta y^4)
+$$
+Due to the discretization, all the odd-order derivatives vanish, leaving only the even-order ones.
+Now, we know that a second-order derivative in the truncation error introduces dissipation.
+The same can be said of all even-order derivatives.
+
+Thus, the chosen scheme induces dissipative errors \textbf{only}.
+
+\section{Question 3}
+\begin{quote}
+    \textit{Demonstrate the solution of the Laplace Equation for the 400 × 400.}
+\end{quote}
+
+\end{document}
