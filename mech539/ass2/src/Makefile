@@ -1,6 +1,7 @@
 output = "../bin/solver.out"
 objects = types.f90 solvers.f90 main.f90
-olevel = -g
+# olevel = -g
+olevel = -O3
 compile:
 	gfortran $(objects) $(olevel) -o $(output)
 check:

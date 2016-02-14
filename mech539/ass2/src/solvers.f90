@@ -30,6 +30,7 @@ module solvers
         real(sp), intent(out) :: maxerr
         real(sp), allocatable, dimension(:) :: u
         real(sp) :: s, corr, err
+        integer, dimension(4) :: stencil
         integer :: i, j, row
         maxerr = 0
         if (solverID .eq. 1) then
@@ -43,17 +44,11 @@ module solvers
                     cycle
                 end if
                 ! Calculate correction
-                s = 0
+                stencil = (/ row-nx, row-1, row+1, row+nx /)
                 if (solverID .eq. 1) then
-                    s = s + u(row - nx)
-                    s = s + u(row - 1)
-                    s = s + u(row + 1)
-                    s = s + u(row + nx)
+                    s = sum(u(stencil))
                 else
-                    s = s + un(row - nx)
-                    s = s + un(row - 1)
-                    s = s + un(row + 1)
-                    s = s + un(row + nx)
+                    s = sum(un(stencil))
                 end if
                 corr = (BI - AIJ*s)/AII
                 if (solverID .eq. 3) then
