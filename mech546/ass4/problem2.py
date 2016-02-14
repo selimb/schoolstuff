@@ -15,6 +15,10 @@ U = mlab.get_variable('U')
 nodeLocs = mlab.get_variable('nodeLocs')
 mlab.stop()
 clear_output()
+print('K')
+print(K)
+print('U')
+print(U)
 
 x = nodeLocs[:,0]
 
