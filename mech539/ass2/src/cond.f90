@@ -33,7 +33,7 @@ module cond
         end if
     end function
 
-    pure function gauss(u, un, row) result (ui)
+    pure function jacobi(u, un, row) result (ui)
         real(sp), dimension(:), intent(in) :: u, un
         integer, intent(in) :: row
         real(sp) :: ui
@@ -42,23 +42,31 @@ module cond
         integer :: i
         stencil = get_stencil(row)
         s = 0
-        do i = 1, 2
-            s = s + un(stencil(i))
-            s = s + u(stencil(i+2))
+        do i = 1, size(stencil)
+            s = s + u(stencil(i))
         end do
         ui = (BI - AIJ*s)/AII
     end function
 
-    pure function sor(u, un, row) result (ui)
-        real(sp), dimension(:), intent(in) :: u, un
-        integer, intent(in) :: row
-        real(sp) :: ui
-        real(sp) :: ugs
-        ugs = gauss(u, un, row)
-        ui = (1.0 - relax)*u(row) + relax*ugs
-    end function
+    function update(u) result (un)
+        real(sp), dimension(:), intent(in) :: u
+        real(sp), dimension(size(u)) :: un
+        integer :: i, j, row
+        un = u
+        do i = 1, nx
+            do j = 1, nx
+                row = get_row(i,j)
+                ! Compute r. b = 0 unless at top
+                ! and Ax0 is 0 unless last 2 rows
 
+                r = b - Ax
+                ! Compute ui
+            end do
+        end do
     subroutine doit()
         real(sp) :: cond
+
+        ! Make b
+
     end subroutine
 end module

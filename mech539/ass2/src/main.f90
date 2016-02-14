@@ -11,8 +11,8 @@ program main
     read(100,*) relax
     ! Set other parameters
     l = nx*nx
-    itermax = 1e6
-    tol = 1e-4
+    itermax = 1e9
+    tol = 1e-6
     ! Allocate
     allocate(u(nx*nx))
     allocate(r(itermax))
