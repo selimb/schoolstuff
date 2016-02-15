@@ -58,6 +58,7 @@
 \RequirePackage{bigstrut}
 \RequirePackage{multicol}
 \RequirePackage{multirow}
+\RequirePackage[dvipsnames]{xcolor}
 \RequirePackage{pdfpages}
 \RequirePackage{url}
 \RequirePackage{hyperref}

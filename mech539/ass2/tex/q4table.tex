@@ -1,0 +1,35 @@
+\newcommand{\mct}[1]{\multicolumn{2}{c}{#1}}
+\newcommand{\pht}{\phantom{}}
+\newcommand{\mrt}[1]{\multirow{4}{*}{#1}}
+\begin{table}[H]
+\caption{Performance comparison of Gauss and Jacobi using different
+optimization levels on various grid sizes $N$}
+\label{tab:performance}
+\centering
+\begin{tabular}{@{}r cc c cc c cc @{}}
+    \toprule
+    & \mct{Iterations} & \pht & \mct{Time per Iteration} & \pht & \mct{Total Time}\\
+    &         &        & \pht & \mct{($10^{-5}$ s)}        & \pht & \mct{(s)}       \\
+    \cmidrule{2-3} \cmidrule{5-6} \cmidrule {8-9}
+     & Jacobi & Gauss && Jacobi & Gauss && Jacobi & Gauss\\
+    \midrule
+
+$N = 100$\\
+     g & \mrt{10726} & \mrt{6020} && 24 & 23 &&  2.53 &  1.38 \\
+    O1 &  &  && 8 & 9 &&  0.91 &  0.53 \\
+    O2 &  &  && 6 & 7 &&  0.68 &  0.41 \\
+    O3 &  &  && 4 & 6 &&  0.38 &  0.39 \\
+$N = 200$\\
+     g & \mrt{31851} & \mrt{18684} && 93 & 93 &&  29.7 &  17.3 \\
+    O1 &  &  && 34 & 35 &&  10.7 &   6.6 \\
+    O2 &  &  && 25 & 27 &&   8.1 &   5.1 \\
+    O3 &  &  && 14 & 26 &&   4.5 &   4.9 \\
+$N = 400$\\
+     g & \mrt{83206} & \mrt{52634} && 375 & 371 &&   312 &   195 \\
+    O1 &  &  && 135 & 142 &&   112 &    75 \\
+    O2 &  &  && 102 & 109 &&    85 &    58 \\
+    O3 &  &  && 57 & 107 &&    47 &    56 \\
+
+    \bottomrule
+\end{tabular}
+\end{table}

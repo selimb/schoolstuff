@@ -1,0 +1,56 @@
+
+\lstset{language=[90]Fortran,
+  basicstyle=\footnotesize\ttfamily,
+  lineskip=-2pt,
+  frame=single,
+  keywordstyle=\color{blue},
+  commentstyle=\color{PineGreen},
+  numbers=left,
+  morecomment=[l]{!\ }% Comment only with space after !
+}
+The listing below shows the meat of the code.
+\texttt{implicit none} is used,
+which means all undeclared variables that appear in the listing are globals.
+These globals are all constants.
+\begin{lstlisting}[caption={Relevant part of the linear solver.
+\texttt{solverID} is a global integer variable that has the mapping:
+1=Jacobi, 2=Gauss, 3=SOR},
+label=lst:fortran]
+subroutine update(u, maxerr)
+    real(sp), dimension(:), intent(inout) :: u
+    real(sp), intent(out) :: maxerr
+    real(sp), allocatable, dimension(:) :: uold
+    real(sp) :: s, corr, err
+    integer, dimension(4) :: stencil
+    integer :: i, j, row
+    maxerr = 0
+    if (solverID .eq. 1) then
+        allocate(uold(size(u)))
+        uold = u
+    end if
+    do i = 1, nx
+        do j = 1, nx
+            if (is_bc(i,j)) then
+                cycle
+            end if
+            row = get_row(i, j)
+            ! Calculate correction
+            stencil = (/ row-nx, row-1, row+1, row+nx /)
+            if (solverID .eq. 1) then
+                s = sum(uold(stencil))
+            else
+                s = sum(u(stencil))
+            end if
+            corr = (BI - AIJ*s)/AII
+            if (solverID .eq. 3) then
+                corr = (1.0 - relax)*u(row) + relax*corr
+            end if
+            ! Calculate error
+            err = abs(corr - u(row))
+            maxerr = max(maxerr, err)
+            ! Assign correction
+            u(row) = corr
+        end do
+    end do
+end subroutine
+\end{lstlisting}
