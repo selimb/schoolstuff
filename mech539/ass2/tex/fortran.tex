@@ -28,11 +28,8 @@ subroutine update(u, maxerr)
         allocate(uold(size(u)))
         uold = u
     end if
-    do i = 1, nx
-        do j = 1, nx
-            if (is_bc(i,j)) then
-                cycle
-            end if
+    do i = 2, nx-1
+        do j = 2, nx-1
             row = get_row(i, j)
             ! Calculate correction
             stencil = (/ row-nx, row-1, row+1, row+nx /)

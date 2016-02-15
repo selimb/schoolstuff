@@ -1,5 +1,4 @@
 module types
     implicit none
-    ! Use single precision
-    integer, parameter :: sp=kind(1.0)
+    integer, parameter :: dp=kind(1.d0)
 end module
