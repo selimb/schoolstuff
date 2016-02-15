@@ -17,11 +17,11 @@ module solvers
 
     pure function is_bc(i, j) result (ret)
         integer, intent(in) :: i, j
-        integer :: ret
+        logical :: ret
         if (i .eq. 1 .or. j .eq. 1 .or. j .eq. nx .or. i .eq. nx) then
-            ret = 1
+            ret = .true.
         else
-            ret = 0
+            ret = .false.
         end if
     end function
 
@@ -39,10 +39,10 @@ module solvers
         end if
         do i = 1, nx
             do j = 1, nx
-                row = get_row(i, j)
-                if (is_bc(i,j) .eq. 1) then
+                if (is_bc(i,j)) then
                     cycle
                 end if
+                row = get_row(i, j)
                 ! Calculate correction
                 stencil = (/ row-nx, row-1, row+1, row+nx /)
                 if (solverID .eq. 1) then
