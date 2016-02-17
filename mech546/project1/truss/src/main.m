@@ -10,6 +10,12 @@ ndims = length(node_locs(1,:));  % Number of spatial dimensions
 % Material properties (hard-coded)
 % matprops = struct('A', 1, 'E', 1, 'RHO', 2770);
 matprops = struct('A', 3225.8 * 10^-6, 'E', 69 * 10^9, 'RHO', 2770);
+%E = 69 * 10^9;
+%A = 3225.8 * 10^-6;
+%RHO = 2770;
+E = 1;
+A = 1;
+EA = E*A;
 
 % Boundary Conditions
 %   Applied Loads
@@ -36,7 +42,8 @@ F = zeros(num_dofs, 1);
 for elem = 1:num_elems
     nodes = connectivity(elem,:);
     % Compute element stiffness
-    Kelem = mk_stiff( node_locs(nodes,:), ndims );
+    [ Klocal, T ] = mk_stiff( node_locs(nodes,:), ndims );
+    Kelem = EA*T'*Klocal*T;
 
     % Scatter into global
     sctr = mk_sctr(nodes, ndims);
@@ -76,12 +83,13 @@ U
 
 %% Post-Computation
 % Calculate Stresses
+S = -1*ones(num_elems, 1);
 for elem = 1:num_elems
     nodes = connectivity(elem,:);
-    Kelem = mk_stiff(node_locs(nodes,:), ndims );
+    [ Kelem, T ] = mk_stiff(node_locs(nodes,:), ndims );
     sctr = mk_sctr(nodes, ndims);
-    f = Kelem*U(sctr);
-    elem
-    nodes
-    f
+    Ulocal = T*U(sctr);
+    P = EA*Kelem*Ulocal;
+    S(elem) = P(2)/A;
 end
+S
