@@ -2,23 +2,31 @@ clear all;
 % Number of spatial dimensions is fixed.
 
 %% Read Mesh and Problem Data
-NDIMS = 3;  % Number of spatial dimensions
-nodeLocs = csvread('nodeLocs.csv', 1, 0);
+% Mesh
+node_locs = csvread('node_locs.csv', 1, 0);
 connectivity = csvread('connectivity.csv', 1, 0);
+ndims = length(node_locs(1,:));  % Number of spatial dimensions
 
-A = 3225.8 * 10^-6;
-E = 69 * 10^9;
-RHO = 2770;
+% Material properties (hard-coded)
+% matprops = struct('A', 1, 'E', 1, 'RHO', 2770);
+matprops = struct('A', 3225.8 * 10^-6, 'E', 69 * 10^9, 'RHO', 2770);
 
-% Boundary Conditions (hard-coded)
-%   Load at node 1 in z-direction of 10 000N
-loads = [ struct('node', 1, 'dim', 3, 'val', 10000) ];
-%   Essential BCs
-fixed_nodes = [7 8 9 10];
+% Boundary Conditions
+%   Applied Loads
+L = csvread('loads.csv', 1, 0);
+num_loads = size(L, 1);
+loads = [];
+for i = 1:num_loads
+    loads = [loads, struct('node', L(i,1), 'dim', L(i,2), 'val', L(i,3))];
+end
 
-num_nodes = length(nodeLocs);
+%   Essential BCs (homogeneous only)
+fixed_nodes = csvread('fixed_nodes.csv', 1, 0)';
+
+% Calculate numbers of stuff
+num_nodes = length(node_locs);
 num_elems = length(connectivity);
-num_dofs = NDIMS*num_nodes;
+num_dofs = ndims*num_nodes;
 
 %% Construct Stiffness Matrix
 U = zeros(num_dofs, 1);
@@ -28,20 +36,20 @@ F = zeros(num_dofs, 1);
 for elem = 1:num_elems
     nodes = connectivity(elem,:);
     % Compute element stiffness
-
+    Kelem = mk_stiff( node_locs(nodes,:), ndims );
 
     % Scatter into global
-    sctr = mk_sctr(nodes, NDIMS);
-    K(sctr, sctr) = K(sctr, sctr) + localK;
+    sctr = mk_sctr(nodes, ndims);
+    K(sctr, sctr) = K(sctr, sctr) + Kelem;
 end
 disp('Global Stiffness Matrix');
 disp('');
-disp(K);
+K
 
 %% Boundary Conditions
 % Applied Loads
 for load = loads
-    sctr = mk_sctr(load.node, NDIMS);
+    sctr = mk_sctr(load.node, ndims);
     sctr = sctr(load.dim);
     F(sctr) = load.val;
 end
@@ -50,7 +58,7 @@ end
 % Instead of deleting rows, we construct a mask. Beauty.
 free_dofs = true(num_dofs,1);
 for fixed_node = fixed_nodes
-    sctr = mk_sctr(fixed_node, NDIMS);
+    sctr = mk_sctr(fixed_node, ndims);
     free_dofs(sctr) = false;
 end
 Kc = K(free_dofs, free_dofs);
@@ -58,4 +66,22 @@ Fc = F(free_dofs);
 
 %% Solve Linear System
 % Fixed DOFs are already 0.
+disp('Condensed System')
+disp('')
+Kc
+Fc
 U(free_dofs) = Kc\Fc;
+disp('Solve Complete')
+U
+
+%% Post-Computation
+% Calculate Stresses
+for elem = 1:num_elems
+    nodes = connectivity(elem,:);
+    Kelem = mk_stiff(node_locs(nodes,:), ndims );
+    sctr = mk_sctr(nodes, ndims);
+    f = Kelem*U(sctr);
+    elem
+    nodes
+    f
+end
