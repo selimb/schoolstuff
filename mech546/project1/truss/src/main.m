@@ -8,13 +8,9 @@ connectivity = csvread('connectivity.csv', 1, 0);
 ndims = length(node_locs(1,:));  % Number of spatial dimensions
 
 % Material properties (hard-coded)
-% matprops = struct('A', 1, 'E', 1, 'RHO', 2770);
-matprops = struct('A', 3225.8 * 10^-6, 'E', 69 * 10^9, 'RHO', 2770);
-%E = 69 * 10^9;
-%A = 3225.8 * 10^-6;
-%RHO = 2770;
-E = 1;
-A = 1;
+E = 69 * 10^9;
+A = 3225.8 * 10^-6;
+RHO = 2770;
 EA = E*A;
 
 % Boundary Conditions
@@ -80,6 +76,7 @@ Fc
 U(free_dofs) = Kc\Fc;
 disp('Solve Complete')
 U
+csvwrite('U.out', U)
 
 %% Post-Computation
 % Calculate Stresses
@@ -93,3 +90,4 @@ for elem = 1:num_elems
     S(elem) = P(2)/A;
 end
 S
+csvwrite('S.out', S)

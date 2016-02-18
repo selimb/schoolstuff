@@ -39,6 +39,6 @@ function [ L, T ] = stiffness_3d(diff)
     cz = dz/L;
     Tq = [cx cy cz];
     z = zeros(size(Tq));
-    T = [Tq z; z Tq]
+    T = [Tq z; z Tq];
 end
 
