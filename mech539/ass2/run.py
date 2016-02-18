@@ -13,6 +13,7 @@ params = dict(
 )
 solvers = ['Jacobi', 'Gauss', 'SOR']
 NXs = [100, 200, 400]
+NXs_lots = np.arange(50, 400+25, 25)
 
 def modify_param(name, val):
     filename = 'input.prm'
@@ -73,19 +74,21 @@ def run_all():
     print('Running all cases')
     modify_param('relax', 1.5)
     for solverID, solver in enumerate(solvers, start=1):
-        for nx in NXs:
+#       for nx in NXs:
+#       for nx in NXs_lots:
             modify_param('nx', nx)
             modify_param('solverID', solverID)
             prefix = '%s_%i' % (solver, nx)
             print('Running %s' % prefix)
             print(run())
-            move_dat('dat', prefix)
+#           move_dat('dat', prefix)
+#           move_dat('dat_precise', prefix)
     print('Done')
 
+all_relax = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 1.95]
 def run_sor():
     modify_param('do_cond', 0)
     modify_param('solverID', 3)
-    all_relax = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 1.95]
     for relax in all_relax:
         modify_param('relax', relax)
         for nx in NXs:
@@ -95,7 +98,40 @@ def run_sor():
             print(run())
             move_dat('sordat', prefix)
 
+# Analytical Stuff
+NMAX = 3613
+def Un(x, y, n):
+    pin = np.float128(np.pi*n)
+    coeff = -(2.0*np.cos(pin) - 2.0)/(pin*np.sinh(pin))
+    return coeff*np.sinh(pin*y)*np.sin(pin*x)
+    return ret
+
+def Uexact(nx, N=NMAX, do_bc=True):
+    x = np.linspace(0, 1, nx, dtype=np.float128)
+    X, Y = np.meshgrid(x, x)
+    U = np.zeros_like(X, dtype=np.float128)
+    for n in range(1, N, 2):
+        U += Un(X, Y, n)
+    # Apply BCs
+    if do_bc:
+        U[0] = 0
+        U[:, 0] = 0
+        U[:, -1] = 0
+        U[-1,:] = 1
+    return U
+
+def calc_all_U():
+    print('Running all analytical solutions')
+    for nx in NXs_lots:
+        prefix = 'Uex_%i' % nx
+        print('Calculating %s' % prefix)
+        U = Uexact(nx)
+        np.save('Uexact/%s' % prefix, U)
+    print('Done')
+
 if __name__ == '__main__':
+    pass
     # time_analysis()
     # run_all()
-    run_sor()
+    # run_sor()
+    # calc_all_U()

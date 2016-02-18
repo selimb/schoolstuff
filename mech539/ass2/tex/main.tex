@@ -123,31 +123,40 @@ SOR is the fastest. However the chosen relaxation parameter plays a significant 
 for the latter scheme, as will be shown for Question 7.
 
 It is not a surprise that the Gauss-Siedel scheme is faster than Jacobi due to the former using
-more up-to-date information, i.e. $u^{(k+1)}$ values.
+more up-to-date information, i.e. $u^{(k+1)}$ values, which leads to a greater rate of ``information spreading'' over
+the problem domain.
 
 Again, the reason for SOR's even faster convergence rate is given in Question 7.
 
 \subsection{Effect of grid size on convergence}
 From a purely physical point of view, one would expect the number of iterations required to converge
-to increase with the number of grid points since information takes longer to travel the grid. Specifically,
-in the case of the Jacobi method, the correction for $u_{ij}$ is only a function of the five neighboring
-nodes.
+to increase with the number of grid points since information takes longer to travel the grid.
+
+Specifically, in the case of the Jacobi method, the correction for $u_{ij}$ is only a function of the five neighboring
+nodes. It then takes more iterations for information at a point $(x_a,y_a)$ to reach the point $(x_b, y_b)$ as
+$\Delta x, \Delta y$ are decreased.
 
 \subsection{Condition number}
+\subsubsection{Procedure}
 The condition number $\kappa_2(A)$ is quite sensitive to the linear solve scheme used as well as the tolerance.
+In any case, the Forsythe and Moler method is mostly made to obtain a ballpark value of the condition number.
 It was found that the following parameters gave the most accurate answer for $N=10$ when compared
 to MATLAB and Python's \texttt{cond} function.
 \begin{description}[noitemsep]
     \item[Scheme:] Gauss-Siedel
     \item[Convergence Criteria:] $r^{(k+1)} < 10^{-15}$
 \end{description}
+It should be noted that \textit{both} solves were converged with the same tolerance. In other words, $Au=b$ and
+$Az=r$ were solved with the same convergence criteria.
+
 Moreover, it's worth noting that $z$ was initialized as 1's everywhere except on the boundaries where it was set -- and
 left unmodified throughout the solve -- to 0, since $r$ is identically zero at the boundaries.
+\subsubsection{Results}
 
 Conditioning numbers are tabulated in~\Cref{tab:cond}. Now, $\kappa$ is technically a property
 only of $A$. Generally, the conditioning number is taken to be a
 measure of how large a change in output can get given a small change in input. Thus, it is safe to say that
-ill-conditioned, problems with high condition numbers, are generally harder to solve.
+ill-conditioned, problems with high condition numbers, are harder to converge.
 
 It can be observed that $\kappa$ increases with $N$. Consequently. the number of iterations required to converge
 is also increased due to the increasing ill-conditioning of the problem.
@@ -164,6 +173,8 @@ is also increased due to the increasing ill-conditioning of the problem.
 The convergence of the residual versus CPU time of all three methods for the 400x400 grid is shown
 in~\Cref{fig:resvscpu}.
 
+One may notice the step-like shape of the curves for $N=100$. This is due to FORTRAN's implementation
+of \texttt{cpu\_time()} having a precision of 4 milliseconds.
 \begin{figure}
     \centering
     \includegraphics[width=1.0\textwidth]{./figs/q5.pdf}
@@ -215,18 +226,155 @@ It's worth noting that only the Jacobi scheme can be parallelized, which would f
 the time per iteration for large enough grids.
 
 \subsection{Memory usage}
+First, it is important to note that $u$ was stored as a \textit{vector}. It was done this way mostly
+because $A$ was initially fully constructed in order to get an idea of its actual structure. However,
+the memory required to store $u$ as a vector and $u$ as a two-dimensional array is almost identical.
+
 As mentioned above, Gauss and SOR require only one $u$ vector to be stored, which is of length $N^2$. On
 the other hand, Jacobi requires two of those $u$ vectors to be stored. In fact, looking at the memory usage
-for the process shows exactly that.
+for the process shows exactly that -- shown in~\Cref{fig:memusage}.
 
+Because of the required post-processing, it is also necessary to store the residual and time elapsed at
+every iteration. This is independent of the method used.
+\begin{figure}[H]
+    \centering
+    \frame{\includegraphics[width=0.8\textwidth]{./figs/memusage.png}}
+    \caption{Memory usage (shown in second to last column) of Gauss (top) and Jacobi (bottom).
+        The arrays containing times and residuals have not been allocated.
+        The memory required by Gauss is roughly half of Jacobi's.}
+    \label{fig:memusage}
+\end{figure}
+
+
+
+\newpage
+\section{Question 6}
+\begin{quote}
+    \textit{Demonstrate that the order of accuracy of the scheme on a plot where the $y$-axis is the
+log of the error and the $x$-axis is $\Delta x$, where both $\Delta x = \Delta y$.}
+\end{quote}
+\subsection{Analytical Solution}
+In order to get values for the error, the analytical solution must be determined.
+
+The solution to the Laplace equation on a unit square with Dirichlet boundary condtion $u = 0$ everywhere
+except $y = 1$, where the condition is $f(x)$ for $0 \le x \le 1$ is given by the following:
+\begin{align}
+    \label{eq:uexg}
+    U(x,y) &= \sum_{n=1}^\infty c_n \sinh(n \pi y) \sin(n \pi x)\\
+    \label{eq:cg}
+    \text{where} c_n &= 2 \int_0^1 f(x)\frac{\sin(n \pi x)}{\sinh(n\pi)} \text{d}x
+\end{align}
+\Cref{eq:cg} can be evaluated analytically with $f(x) = 1$:
+\newcommand{\csol}[1]{- \frac{2\cos(#1 \pi) - 2}{#1 \pi \sinh(#1 \pi)}}
+
+\begin{equation}
+    \label{eq:c}
+    c_n = \csol{n}
+\end{equation}
+which vanishes for even-numbered $n$!
+
+Finally, substituting the above $c_n$ into~\Cref{eq:uexg} yields the exact field $U$ for this problem:
+\begin{equation}
+    \label{eq:uex}
+    U(x,y) = \sum_{n=0}^\infty \csol{k}\sinh(k \pi y) \sin(k \pi x)
+\end{equation}
+where $k = 2n + 1$
+
+\subsubsection{Implementation on a computer}
+The series in \Cref{eq:uex} cannot be evaluated in its entirety on a computer for two reasons:
+\begin{enumerate}[noitemsep]
+    \item We cannot go to $\infty$.
+    \item $\sinh(n\pi)$ eventually grows beyond the machine's largest representable number.
+\end{enumerate}
+The second item is the most problematic, since even going further than $n=223$ is made impossible when
+using double precision.
+Switching to 128 bit floating point numbers (quadruple-precision) allows us to reach
+numbers as high as $1.2\text{e}+4392$ and as low as $1.1\text{e}-19$. Consequently, it becomes possible to sum
+up to $n = 3611$, at which point \texttt{nan}s start showing up again.
+
+Now, this lack of accuracy in the numerical analytical solution $U_{NA}$ is still a problem. However,
+the results are smooth over the whole problem domain with the exception of the boundary $y = 1$. This is
+illustrated in~\Cref{fig:topanal}. Since we know our finite difference approximate solution satisfies
+the boundary conditions exactly, we can either ignore the top boundary in our error calculation or
+manually enforce $U_{NA}(x,1) = 1$ after the fact.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{./figs/topanal}
+    \caption{Approximation of the analytical solution $U_{NA}$ at $y = 1$ by evaluating
+        the first 3611 terms of the infinite series.}\label{fig:topanal}
+\end{figure}
+
+\subsection{Error calculation}
+\newcommand{\norm}[1]{\big|\big|#1\big|\big|}
+The error is calculated as follows:
+$$
+e = \frac{\norm{U - U_{NA}}_1}{\norm{U_{NA}}_1}
+$$
+The 1-norm is used because it tends to be more resistant to outliers in the data, which is certainly the case
+here. This can be observed in~\Cref{fig:errplot}. Indeed, errors are largest at the top left and right corners
+but relatively low otherwise. Using a 2-norm would give significantly more weight to the larger error in those
+regions.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{./figs/errplot}
+    \caption{Contour of $U - U_{NA}$ on a log scale. Highest errors are localized in the top corners.}
+    \label{fig:errplot}
+\end{figure}
+
+\subsection{Comparison with approximation}
+In order to truly obtain converged solutions and actually observe the effect of grid refinement, the tolerance
+needed to be set to 10$^{-15}$.
+
+\Cref{fig:orderaccuracy} shows the improvement in accuracy with grid refinement. The first thing we notice
+is how values for Jacobi, Gauss and SOR are identical for each grid. This is the only thing that makes sense:
+the linear solving technique should not affect the order of accuracy since it does not affect the equations
+to solve whatsoever.
+In other words, the coefficient matrix $A$ and right-hand side vector $b$ are not a result of the chosen
+linear solver.
+
+The order of accuracy is dictated by the spatial discretization scheme used, which remained the same
+throughout all experiments for this report. Now, it was derived in Question 1 that the finite difference
+scheme used is second-order accurate. Thus, the truncation error varies as $O(\Delta x^2, \Delta y^2)$.
+Thus, since the grid is refined uniformly both in the $x$ and $y$, we can simply say
+that the error decreases as $O(\Delta x^2)$.
+
+Thus, it is expected that the slope on a log plot of the error versus the number of grid points be close to
+2. The actual slope is shown on the graph and is relatively close to 2 -- it's closer to 2 than it is to 1.
+The fact that our scheme is second-order is confirmed.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{./figs/orderaccuracy}
+    \caption{Error vs. number of grid points on a log scale with a straight line fit.}\label{fig:orderaccuracy}
+\end{figure}
+
+
+
+\newpage
 \section{Question 7}
+\begin{quote}
+    \textit{Effect of the relaxation parameter on the SOR. Try several different values and discuss
+    your findings. Show plots of the convergence of the residual for various relaxation
+    parameters. Is there an optimum relaxation parameter? Is the optimum the same for
+    all grid sizes.}
+\end{quote}
+Refer to~\Cref{fig:q7} for plots of the convergence of the residual for various values of $\omega$
+on all grid sizes.
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{./figs/q7.pdf}
+    \caption{Effect of relaxation parameter on convergence rate for $N = 100, 200, 400$ going from top to bottom.}
+    \label{fig:q7}
+\end{figure}
+
 In all previous questions, SOR essentially acted as an over-relaxed Gauss scheme. This leads to quicker
-convergence, since the "correction" at each point is attributed a greater weight.
+convergence, since the ``correction'' at each point is attributed a greater weight.
 In other words, values are allowed to vary faster. Of course, over-relaxation is not the
 best choice for every problem. In fact, under-relaxation is often necessary when dealing with stiff
 problems. A more detailed discussion on relaxation is, however, beyond the scope of this assignment and course.
 
-It was also found that 2 is an upper bound for stability. In other words, setting $\omega \ge 2$ leads to
+The higher the relaxation parameter, the better. This applies to all grid sizes. However, it was found that 2
+is an upper bound for stability. In other words, setting $\omega \ge 2$ leads to
 large spurious oscillations in the residual and a complete lack of convergence.
 
 \newpage
@@ -236,6 +384,13 @@ large spurious oscillations in the residual and a complete lack of convergence.
 \Cref{tab:performance} illustrates the effects of optimization level on performance for the Jacobi and Gauss schemes.
 \input{q4table}
 \subsection{Linear Solver Code}
+The meat of the code is shown below. The call to the \texttt{update} subroutine is inside a \texttt{while} loop.
+
+The only difference between Jacobi and Gauss-Siedel is the allocation
+of a \texttt{uold} array and its usage in calculating \texttt{s}, the multiplier of $a_{ij}$.
+
+In fact, Jacobi probably could've been made faster if the allocation wasn't done at every iteration, which is currently
+the case.
 \input{fortran}
 \subsection{Cache Calculations}
 These are rough calculations and based on my limited computer science knowledge.
