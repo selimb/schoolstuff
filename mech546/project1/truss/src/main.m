@@ -8,9 +8,11 @@ connectivity = csvread('connectivity.csv', 1, 0);
 ndims = length(node_locs(1,:));  % Number of spatial dimensions
 
 % Material properties (hard-coded)
-E = 69 * 10^9;
-A = 3225.8 * 10^-6;
-RHO = 2770;
+% E = 69 * 10^9;
+% A = 3225.8 * 10^-6;
+% RHO = 2770;
+E = 30 * 10^6;
+A = 3;
 EA = E*A;
 
 % Boundary Conditions
@@ -23,7 +25,12 @@ for i = 1:num_loads
 end
 
 %   Essential BCs (homogeneous only)
-fixed_nodes = csvread('fixed_nodes.csv', 1, 0)';
+F = csvread('fixed_nodes.csv', 1, 0);
+num_fixed = size(F, 1);
+fixed_bcs = [];
+for i = 1:num_fixed
+    fixed_bcs = [fixed_bcs, struct('node', F(i,1), 'dim', F(i, 2))];
+end
 
 % Calculate numbers of stuff
 num_nodes = length(node_locs);
@@ -56,12 +63,15 @@ for load = loads
     sctr = sctr(load.dim);
     F(sctr) = load.val;
 end
+disp('Global Source Term');
+F
 
 % Essential Boundary Conditions
 % Instead of deleting rows, we construct a mask. Beauty.
 free_dofs = true(num_dofs,1);
-for fixed_node = fixed_nodes
-    sctr = mk_sctr(fixed_node, ndims);
+for fixed = fixed_bcs
+    sctr = mk_sctr(fixed.node, ndims);
+    sctr = sctr(fixed.dim);
     free_dofs(sctr) = false;
 end
 Kc = K(free_dofs, free_dofs);
