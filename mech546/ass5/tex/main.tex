@@ -1,0 +1,16 @@
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\begin{document}
+\mytitlepage
+\tableofcontents
+\newpage
+% Begin writing here.
+\newcommand{\diff}[2]{\ensuremath{
+    \frac{\text{d}#1}{\text{d}#2}}
+}
+
+\input{q1}
+\input{q2}
+\input{q3}
+\end{document}

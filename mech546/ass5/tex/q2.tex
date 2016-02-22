@@ -1,0 +1,88 @@
+\section{Question 2}
+The bending moment $M$ and transverse deflection $w$ in a beam according to the
+Euler-Bernoulli beam theory are related by:
+\begin{equation}
+    \label{eq:governbeam}
+    -EI\diff{^2 w}{x^2} = M(x)
+\end{equation}
+In this case, a linearly distributed load $q(x)$ is applied over the whole length
+$L$ of the beam:
+\begin{equation}
+    q(x) = q_0 \left(1 - \frac{x}{L}\right)
+\end{equation}
+
+\subsection{Analytical Solution}
+The exact solution is obtained by first finding an expression for $M(x)$ by
+taking a cut along the beam:
+\newcommand{\pfrac}[2]{\ensuremath{ \left( \frac{#1}{#2} \right) }}
+$$
+    M(x) = -\frac{q_0 L^2}{6}\left[
+        1 - 3\pfrac{x}{L} + 3\pfrac{x^2}{L^2} - \pfrac{x}{L}^3
+    \right]
+$$
+Integrating~\Cref{eq:governbeam} once gives the deflection angle $\theta$:
+$$
+    \theta(x) = -\frac{q_0}{E I} \left[
+        -\pfrac{x^4}{24L} + \pfrac{x^3}{6} - \pfrac{L x^2}{4} + \pfrac{L^2 x}{6} + C_1
+    \right]
+$$
+Applying the boundary condition $\theta(0) = 0$ yields $C_1 = 0$.
+
+Integrating once more gives the deflection $w$:
+$$
+    w(x) = -\frac{q_0}{EI} \left[
+        -\pfrac{x^5}{120 L} + \pfrac{x^4}{24} - \pfrac{L x^3}{12} + \pfrac{L^2 x^2}{12}
+        + C_2
+    \right]
+$$
+and applying $w(0) = 0$ yields $C_2 = 0$.
+
+Thus, the maximum displacement is at $L$ for $q_0 = EI = L = 2$ is given by:
+$$
+    w_{max}(x) = w(L) = \frac{2^4}{30} = \frac{8}{15} \approx 0.5333
+$$
+
+\subsection{FEM solution}
+As we learned in class, the weak form -- if we use only one element and
+set $c_f = 0$ -- is given by:
+\begin{equation}
+    \label{eq:weakbeam}
+    0 = \int_0^L v\left(
+        EI \diff{^2w}{x^2}\diff{^2 v}{x^2} - vq
+    \right) \text{d}x
+    + \left[
+        v \diff{}{x}(EI\diff{^2 w}{x^2}) - \diff{v}{x}EI\diff{^2w}{x^2}
+    \right]^L_0
+\end{equation}
+We use the following approximation on $w$:
+\begin{equation}
+    w_h^e(x) = \sum_{j+1}^4 \Delta_j^e \phi_j^e(x)
+\end{equation}
+where the interpolation functions are given in the notes. This leads to the following
+element -- and global in this case -- stiffness matrix:
+\begin{equation}
+    [K] = \frac{2 E I}{L^3} \left[ \begin{array}{cccc}
+        6 & -3L & -6 & -3L\\
+        -3L & 2L & 3L & L^2\\
+        -6 & 3L & 6 & 3L\\
+        -3L & L^2 & 3L & 2L^2
+    \end{array} \right]
+\end{equation}
+Now, in order to obtain the source term we need to carry out the following integration for
+each $v$:
+$$
+    \int_0^L \phi_i(x) q(x) \text{d}x
+$$
+which yields:
+\begin{equation}
+    [Q] = \frac{q_0 L}{12} \left \{ \begin{array}{c}
+        6 \\ -L \\ 6 \\ L\\
+    \end{array} \right \} + \frac{q_0}{60} \left \{ \begin{array}{c}
+        -9L \\ 2L^2 \\ -21L \\ -3L^3 \\
+    \end{array} \right \}
+\end{equation}
+Finally, applying boundary conditions at the fixed end ($w(0) = \theta(0) = 0$) allows
+us to remove the first and second rows/columns and solve for the remaining degrees
+of freedom. The resulting displacement $w_1^2$ is equal to 0.5333.
+
+Thus, the exact solution of $w$ is found for $x = L$.

@@ -1,0 +1,97 @@
+\section{Question 1}
+The system is governed by the following differential equation:
+\begin{equation}
+    \label{eq:govern}
+    -\frac{1}{r}\diff{}{r}\left[
+        a(r) \diff{u}{r} \right]
+    = f(r) \quad \text{for}~ R_i < r < R_0
+\end{equation}
+The weighted-integral form can be obtained by multiplying~\Cref{eq:govern} by a weight
+function $w(r)$ and integrating over the volume:
+\newcommand{\termg}{\ensuremath{
+    -\frac{1}{r}\diff{}{r}\left[
+        a(r) \diff{u}{r} \right]
+}}
+\begin{align*}
+    0 &= \int_V w(r) \left( \termg - f(r) \right) \text{d}V \\
+    &= \int_0^1 \int_0^{2\pi}
+        \int_{R_i}^{R_0} w(r) \left( \termg - f(r) \right) r~ \text{d}r
+        ~\text{d}\theta~\text{d}z
+\end{align*}
+Since $w, f, u$ only depend on $r$, it is straight-forward to carry out the integration
+with respect to $z$ and $\theta$, which yields the following:
+\begin{equation}
+    \label{eq:weight}
+    0 = 2\pi
+        \int_{R_i}^{R_0} w(r) \left( \termg - f(r) \right) r~ \text{d}r
+\end{equation}
+Next, integration by steps of~\Cref{eq:weight} is performed in order to obtain
+the weak formulation for the problem:
+\begin{equation}
+    \label{eq:weak}
+    \boxed{
+    0 = 2\pi
+        \int_{R_i}^{R_0} \left( a(r) \diff{w}{r}\diff{u}{r} - rw(r)f(r) \right) \text{d}r
+        - 2\pi \left[ w(r)a(r) \diff{u}{r} \right]^{R_0}_{R_i}
+    }
+\end{equation}
+The equation can be divided by $2\pi$ on both sides.
+
+It is now possible to substitute our finite element approximation into~\Cref{eq:weak} and
+obtain an expression for the element stiffness matrix $[K^e]$ and element source term
+$\{f^e\}$. $u(r)$ is approximated as:
+\begin{equation}
+    \label{eq:u}
+    u(r) \approx \sum_{j=1}^n u_j^e \psi_j^e(r)
+\end{equation}
+and the weight function $w$ is simply the set of all $\psi_i$:
+$w = \psi_1, \psi_2, ..., \psi_n$.
+
+By using linear elements, the $\psi^e_i$ are linear interpolation functions:
+$$
+    \psi_1^e(r) = \frac{r_b - r}{r_b - r_a}, \quad
+    \psi_2^e(r) = \frac{r - r_a}{r_b - r_a}
+$$
+The term $r_b - r_a$ is commonly referred to as $h_e$.
+
+Then, subsituting~\Cref{eq:u} into~\Cref{eq:weak} as well as $a(r) = rk$, $f = f_0$
+and integrating for each $w$ yields:
+\begin{equation}
+    [K^e] = \frac{k}{h_e}(r_a + \frac{1}{2}h_e) \left[ \begin{array}{cc}
+        1 & -1\\ -1 & 1\\ \end{array} \right],
+    \quad \{f^e\} = \frac{f_e h_e}{6} \left \{ \begin{array}{c}
+        3r_a + h_e\\ 3r_a + 2h_e\\ \end{array} \right \}
+\end{equation}
+And the boundary condition source term can be written as (for two linear elements) as:
+$$
+    \{Q\} = \left[ \begin{array}{c} Q_1^1 \\ Q^1_2 + Q_2^1 \\ Q_2^2\\ \end{array} \right]
+$$
+In this case, the boundary conditions are given as:
+\begin{align}
+    \diff{u}{r}\bigg|_{r=0} &= 0\\
+    k \diff{u}{r} + \beta(u - u_\infty)\bigg|_{r=R_0} &= 0
+\end{align}
+Thus, $Q^1_2 + Q_2^1 = Q_1^1 = 0$ and
+$Q_2^2 = \left(r k \diff{u}{r} \right) \bigg|_{r=R_0} = R_0 \cdot \beta(u^2_2 - u_\infty)$.
+Notice how the source term is a function of $u^2_2$. Thus, it needs to be brought back
+to the left-hand side of the equations, i.e. added to the global coefficient stiffness
+matrix.
+
+Solving the linear system yields the following values (all values have units of [$^\circ$C]).
+$$
+    U_1 = u_1^1 = 339.444, \quad U_2 = u_1^2 = u_2^1 = 318.611, \quad U_3 = u_2^2 = 270.0
+$$
+
+The analytical solution is given by (from Example 3.4.1 in the book):
+\begin{equation}
+    u_{exact}(r) = u_\infty + \frac{f_0 R_0}{2\beta} + \frac{f_0 R_0^2}{4k}\left(
+        1 - \frac{r^2}{R_0^2} \right)
+\end{equation}
+Finally, the FEM approximation and exact solution are compared on~\Cref{fig:q1}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{./figs/q1}
+    \caption{Comparison of exact and FEM solutions.}\label{fig:q1}
+\end{figure}
+
+
