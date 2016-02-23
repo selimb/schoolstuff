@@ -8,11 +8,11 @@ connectivity = csvread('connectivity.csv', 1, 0);
 ndims = length(node_locs(1,:));  % Number of spatial dimensions
 
 % Material properties (hard-coded)
-% E = 69 * 10^9;
-% A = 3225.8 * 10^-6;
+E = 69 * 10^9;
+A = 3225.8 * 10^-6;
 % RHO = 2770;
-E = 30 * 10^6;
-A = 3;
+% E = 30 * 10^6;
+% A = 3;
 EA = E*A;
 
 % Boundary Conditions
@@ -53,7 +53,6 @@ for elem = 1:num_elems
     K(sctr, sctr) = K(sctr, sctr) + Kelem;
 end
 disp('Global Stiffness Matrix');
-disp('');
 K
 
 %% Boundary Conditions
@@ -78,11 +77,11 @@ Kc = K(free_dofs, free_dofs);
 Fc = F(free_dofs);
 
 %% Solve Linear System
-% Fixed DOFs are already 0.
 disp('Condensed System')
 disp('')
 Kc
 Fc
+% Fixed DOFs are already 0, only need to set the values of the free DOFs.
 U(free_dofs) = Kc\Fc;
 disp('Solve Complete')
 U
