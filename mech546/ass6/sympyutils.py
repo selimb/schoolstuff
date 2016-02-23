@@ -15,8 +15,8 @@ def show(expr, name):
     return disp.Math(mk_expr(expr, name))
 
 def show_add(exprs, name):
-    body = name + '=' + ' + '.join([sp.latex(expr) for expr in exprs])
-    return disp.Math(body)
+    body = name + '=&' + r'\\ &+ '.join([sp.latex(expr) for expr in exprs])
+    return disp.Math(mk_align(body))
 
 def show_list(exprs, names):
     assert len(exprs) == len(names)
