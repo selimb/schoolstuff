@@ -5,7 +5,7 @@
 % `sctr` can be used as follows to scatter a local 1-D array:
 %     Fglobal(sctr) = Fglobal(sctr) + Flocal
 % and into a matrix:
-%     Kglobal(sctr) = Kglobal(sctr) + Klocal
+%     Kglobal(sctr,sctr) = Kglobal(sctr,sctr) + Klocal
 %
 % This is entirely dependent on the chosen DOF mapping. To be consitent
 % with the book and lecture notes, we first alternate between each
