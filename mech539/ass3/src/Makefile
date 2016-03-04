@@ -5,6 +5,8 @@ olevel = -O3
 opt =
 compile:
 	gfortran $(objects) $(opt) $(olevel) -o $(output)
+grid:
+	gfortran generategrid.f90 $(opt) $(olevel) -o "../bin/gridder.out"
 check:
 	gfortran -g -fbounds-check -Wall -fbacktrace -finit-real=nan $(objects) -o $(output)
 clean:
