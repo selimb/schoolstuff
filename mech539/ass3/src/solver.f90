@@ -39,7 +39,7 @@ subroutine apply_neumann_bc(phi)
    ! dy/dx = tc*(-4*x + 82)
    do i = xlim1, xlim2
        dydx = tc*(-4*x(i) + 82)
-       phi(i,1) = phi(i,2) + Uinf*dy*dydx
+       phi(i,1) = phi(i,2) - Uinf*dy*dydx
    end do
 end subroutine
 
