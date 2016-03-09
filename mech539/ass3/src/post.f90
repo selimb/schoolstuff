@@ -7,6 +7,7 @@ subroutine post(phi, u, up, v, M, P, Cp)
     real(dp), dimension(nx, ny), intent(in) :: phi
     real(dp), dimension(nx, ny), intent(out) :: u, up, v, M, P, Cp
     real(dp), dimension(nx, ny) :: a, umag
+    real(dp) :: a0inf2
     integer :: i, j
     ! Calculate u
     up(1,:) = (phi(2,:) - phi(1,:))/(x(2) - x(1))
@@ -24,7 +25,8 @@ subroutine post(phi, u, up, v, M, P, Cp)
     ! Calculate velocity magnitude
     umag = sqrt(u**2 + v**2)
     ! Calculate speed of sound
-    a = sqrt(ainf**2 - (gamma-1)*Uinf*u)
+    a0inf2 = ainf**2 + 0.5*(gamma-1)*Uinf**2
+    a = sqrt(a0inf2 - 0.5*(gamma-1)*umag**2)
     ! Mach Number
     M = umag/a
     ! Pressure

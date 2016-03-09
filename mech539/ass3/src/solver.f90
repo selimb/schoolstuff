@@ -11,7 +11,7 @@ real(dp) :: dy0, mMinf2, gp1m2u
 ! xlim1 and xlim2 correspond to the indices enclosing:
 !   20 <= x <= 21
 integer :: xlim1, xlim2
-public solve
+public solve, slvtridiag
 contains
 
 subroutine init()
@@ -108,11 +108,9 @@ subroutine calc_coeffs(phi, a, b, c, d, e, g)
    end do
 end subroutine
 
-! subroutine gauss_update(phi, err)
-subroutine gauss_update(phi, err, k)
+subroutine gauss_update(phi, err)
    real(dp), dimension(nx,ny), intent(inout) :: phi
    real(dp)                  , intent(out)   :: err
-integer :: k
    real(dp), dimension(3:nx-1, 2:ny-1) :: a, b, c, d, e, g
    real(dp) :: maxphi, maxerr, corr
    integer :: i, j
@@ -163,10 +161,10 @@ subroutine gauss_line_update(phi, err)
        rhs(j) = rhs(j) - b(i,j)*phi(i,j+1)
        !   Solve system.
        call slvtridiag(l, diag, u, rhs, corr)
-       maxerr = max(maxerr, maxval(abs( corr - phi(i,2:ny-1) )))
        do j = 2, ny-1
            ! Calculate error
            err = abs(corr(j) - phi(i,j))
+           if (i .lt. 10) write(*,*) i,j, err
            maxerr = max(maxerr, err)
            ! Assign correction
            phi(i,j) = corr(j)
@@ -184,19 +182,19 @@ subroutine solve(phi, r, t, iters)
    phi = 0
    ! Set constants
    call init
-   write(*,*) xlim1, xlim2
    ! Start timer and solve
    call cpu_time(tic)
    do k = 1, itermax
        call apply_neumann_bc(phi)
        if (solverID .eq. 1) then
-           call gauss_update(phi, err, k)
+           call gauss_update(phi, err)
        else
            call gauss_line_update(phi, err)
        end if
        r(k) = err
        call cpu_time(toc)
        t(k) = toc - tic
+       write(*,*) k, err
        if (err .lt. tol) then
            exit
        end if
@@ -206,4 +204,30 @@ subroutine solve(phi, r, t, iters)
    write(*,*) "Converged after ", iters, " iterations in ", t(iters), " seconds."
 end subroutine
 
+! Algorithm from
+! http://www.cfd-online.com/Wiki/Tridiagonal_matrix_algorithm_-_TDMA_(Thomas_algorithm)
+subroutine slvtridiag(a, b, c, d, x)
+    use types, only: dp
+    implicit none
+    real(dp), dimension(:)        , intent(inout) :: b
+    real(dp), dimension(2:size(b)), intent(in)    :: a
+    real(dp), dimension(size(b)-1), intent(in)    :: c
+    real(dp), dimension(size(b))  , intent(inout) :: d
+    real(dp), dimension(size(b))  , intent(out)   :: x
+    integer :: k, n
+    real(dp) :: m
+    n = size(d)
+    ! Forward elimination
+    do k = 2, n
+        m = a(k)/b(k-1)
+        b(k) = b(k) - m*c(k-1)
+        d(k) = d(k) - m*d(k-1)
+    end do
+    ! Backward substitution
+    x = d/b
+    do k = n-1, 1, -1
+        write(*,*) k
+        x(k) = (d(k) - c(k)*x(k+1))/b(k)
+    end do
+end subroutine
 end module
