@@ -1,12 +1,13 @@
 module solver
 use types, only: dp
 use grid, only: nx, ny, x, y
-use params, only: Minf, solverID, gamma
+use params, only: Minf, solverID, gamma, Ttot_in, Rgas
 implicit none
-real(dp), public, parameter :: tol = 2e-15
-integer, public, parameter  :: itermax = 100000
+real(dp), public, parameter :: tol = 1e-15
+integer, public, parameter  :: itermax = 1e7
+real(dp), public :: Uinf, ainf
 private
-real(dp) :: Uinf, dy0, mMinf2, gp1m2u
+real(dp) :: dy0, mMinf2, gp1m2u
 ! xlim1 and xlim2 correspond to the indices enclosing:
 !   20 <= x <= 21
 integer :: xlim1, xlim2
@@ -14,8 +15,10 @@ public solve
 contains
 
 subroutine init()
-   ! Set constants
-   Uinf = 1
+   real(dp) :: T
+   T = Ttot_in*(1 + 0.5*(gamma - 1)*Minf**2)**(-1)
+   ainf = sqrt(gamma*Rgas*T)
+   Uinf = Minf*ainf
    dy0 = y(2) - y(1)
    mMinf2 = (1 - Minf**2)
    gp1m2u = (gamma + 1)*Minf**2/Uinf
@@ -55,7 +58,8 @@ end subroutine
 subroutine calc_coeffs(phi, a, b, c, d, e, g)
    real(dp), dimension(nx, ny), intent(in) :: phi
    real(dp), dimension(3:nx-1, 2:ny-1), intent(out) :: a, b, c, d, e, g
-   real(dp), dimension(2:nx-1, 2:ny-1) :: AA, mu
+   real(dp), dimension(2:nx-1, 2:ny-1) :: AA
+   integer,  dimension(2:nx-1, 2:ny-1) :: mu
    real(dp) :: dx, dphi
    real(dp) :: dxo, dxm, dxp, dyo, dyp, dym
    real(dp) :: dxmo, dxmm
@@ -63,7 +67,7 @@ subroutine calc_coeffs(phi, a, b, c, d, e, g)
    integer :: i, j
    ! Calculate A and mu
    mMinf2 = (1 - Minf**2)
-   gp1m2u = (gamma + 1)*Minf**2/Uinf
+   gp1m2u = (gamma + 1)*(Minf**2)/Uinf
    do j = 2, ny-1
    do i = 2, nx-1
        dx = x(i+1) - x(i-1)
@@ -99,21 +103,22 @@ subroutine calc_coeffs(phi, a, b, c, d, e, g)
                muAA/(dxo*dxm) &
              - muAAm*(1/dxm + 1/dxmm)/dxmo )
            e(i,j) = 2*muAA/(dxo*dxp)
-           g(i,j) = 2*muAAm
+           g(i,j) = 2*muAAm/(dxmo*dxmm)
        end do
    end do
 end subroutine
 
-subroutine gauss_update(phi, err)
+! subroutine gauss_update(phi, err)
+subroutine gauss_update(phi, err, k)
    real(dp), dimension(nx,ny), intent(inout) :: phi
    real(dp)                  , intent(out)   :: err
+integer :: k
    real(dp), dimension(3:nx-1, 2:ny-1) :: a, b, c, d, e, g
    real(dp) :: maxphi, maxerr, corr
    integer :: i, j
    maxphi = maxval(abs(phi))
    maxerr = 0
    call calc_coeffs(phi, a, b, c, d, e, g)
-!!!!!!! In which order do we loop? !!!!!!
    do j = 2, ny-1
        do i = 3, nx-1
            ! Calculate correction
@@ -127,7 +132,7 @@ subroutine gauss_update(phi, err)
            phi(i,j) = corr
        end do
    end do
-   err = maxerr/maxphi
+   err = maxerr!/maxphi
 end subroutine
 
 subroutine gauss_line_update(phi, err)
@@ -179,25 +184,26 @@ subroutine solve(phi, r, t, iters)
    phi = 0
    ! Set constants
    call init
+   write(*,*) xlim1, xlim2
    ! Start timer and solve
    call cpu_time(tic)
    do k = 1, itermax
+       call apply_neumann_bc(phi)
        if (solverID .eq. 1) then
-           call gauss_update(phi, err)
+           call gauss_update(phi, err, k)
        else
            call gauss_line_update(phi, err)
        end if
-       call apply_neumann_bc(phi)
        r(k) = err
        call cpu_time(toc)
        t(k) = toc - tic
        if (err .lt. tol) then
-           write(*,*) "Converged after ", k, " iterations in ", t(k), " seconds."
            exit
        end if
        if (mod(k, 1000) == 0) write(*,*) k, err
    end do
    iters = k
+   write(*,*) "Converged after ", iters, " iterations in ", t(iters), " seconds."
 end subroutine
 
 end module

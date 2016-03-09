@@ -18,6 +18,9 @@ module params
    implicit none
    public
    real(dp), parameter :: gamma = 1.4_dp
+   real(dp), parameter :: Ttot_in = 1
+   real(dp), parameter :: Rgas = 1
+   real(dp), parameter :: Pinf = 1
    real(dp) :: Minf
    integer :: solverID
 end module

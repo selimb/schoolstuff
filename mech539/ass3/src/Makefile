@@ -1,5 +1,5 @@
 output = "../bin/solver.out"
-objects = modules.f90 slvtridiag.f90 solver.f90 main.f90
+objects = modules.f90 slvtridiag.f90 solver.f90 post.f90 main.f90
 # olevel = -g
 olevel = -O3
 opt =

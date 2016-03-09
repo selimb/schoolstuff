@@ -11,8 +11,8 @@
 program generategrid
 implicit none
 integer            :: i,j
-integer, parameter :: imax=150,jmax=66 ! imax must be divisible by 2
-double precision, parameter :: del_min=0.020D0 ! Minimum Grid Spacing
+integer, parameter :: imax=60,jmax=40 ! imax must be divisible by 2
+double precision, parameter :: del_min=0.025D0 ! Minimum Grid Spacing
 double precision x(1:imax), y(1:jmax)
 
 !  Generate distribution of x-coordinates
@@ -25,7 +25,7 @@ do i=(imax/2+1),imax
     x(i)=x(i-1)+del_min
   else
     ! If x is downstream then stretch the grid until the right farfield boundary
-    x(i)=x(i-1)+(x(i-1)-x(i-2))*1.1**1.25D0
+    x(i)=x(i-1)+(x(i-1)-x(i-2))*1.5
   end if
 
   if (i.lt.imax) x(imax-i)=-x(i) ! Mirror the grid about imax/2.
