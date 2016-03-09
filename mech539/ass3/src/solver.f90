@@ -164,7 +164,6 @@ subroutine gauss_line_update(phi, err)
        do j = 2, ny-1
            ! Calculate error
            err = abs(corr(j) - phi(i,j))
-           if (i .lt. 10) write(*,*) i,j, err
            maxerr = max(maxerr, err)
            ! Assign correction
            phi(i,j) = corr(j)
@@ -194,11 +193,10 @@ subroutine solve(phi, r, t, iters)
        r(k) = err
        call cpu_time(toc)
        t(k) = toc - tic
-       write(*,*) k, err
        if (err .lt. tol) then
            exit
        end if
-       if (mod(k, 1000) == 0) write(*,*) k, err
+!      if (mod(k, 25000) == 0) write(*,*) k, err
    end do
    iters = k
    write(*,*) "Converged after ", iters, " iterations in ", t(iters), " seconds."
@@ -226,7 +224,6 @@ subroutine slvtridiag(a, b, c, d, x)
     ! Backward substitution
     x = d/b
     do k = n-1, 1, -1
-        write(*,*) k
         x(k) = (d(k) - c(k)*x(k+1))/b(k)
     end do
 end subroutine
