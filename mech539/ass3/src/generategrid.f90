@@ -44,13 +44,9 @@ do i=3,jmax
   y(i)=y(i-1)+(y(i-1)-y(i-2))*1.1**1.25D0
 end do
 
- open(unit = 44,file = "x.txt")
- write(44,*) (x(j), j=1,imax)
- close(44)
-
- open(unit = 50,file = "y.txt")
- write(50,*) (y(j), j=1,jmax)
- close(50)
-
+open(20, file="grid")
+write(20, *) imax, jmax
+write(20, *) (x(j), j=1,imax)
+write(20, *) (y(j), j=1,jmax)
 
 end program generategrid

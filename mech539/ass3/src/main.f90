@@ -27,6 +27,9 @@ program main
     call solve(phi, r, t, iters)
     ! Output
     open(10, file='phi.dat')
+    do i = 1, nx
+        write(10,*) (phi(i,j), j=1,ny)
+    end do
 !   do i = 1, size(phi)
 !       write(10,*) phi(i)
 !   end do

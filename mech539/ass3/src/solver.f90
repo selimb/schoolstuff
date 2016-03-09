@@ -3,15 +3,24 @@ use types, only: dp
 use grid, only: nx, ny, x, y
 use params, only: Minf, solverID, gamma
 implicit none
-real(dp), public, parameter :: tol = 1e-15
+real(dp), public, parameter :: tol = 2e-15
 integer, public, parameter  :: itermax = 100000
 private
-real(dp) :: Uinf, mMinf2, gp1m2u
+real(dp) :: Uinf, dy0, mMinf2, gp1m2u
 ! xlim1 and xlim2 correspond to the indices enclosing:
 !   20 <= x <= 21
 integer :: xlim1, xlim2
 public solve
 contains
+
+subroutine init()
+   ! Set constants
+   Uinf = 1
+   dy0 = y(2) - y(1)
+   mMinf2 = (1 - Minf**2)
+   gp1m2u = (gamma + 1)*Minf**2/Uinf
+   call calc_xlims
+end subroutine
 
 subroutine calc_xlims()
    logical, dimension(nx) :: mask
@@ -23,7 +32,7 @@ end subroutine
 subroutine apply_neumann_bc(phi)
    use grid, only: tc
    real(dp), dimension(nx,ny), intent(inout) :: phi
-   real(dp) :: dydx, dy
+   real(dp) :: dydx
    integer i
    ! Symmetry BCs
    !   Upstream
@@ -39,7 +48,7 @@ subroutine apply_neumann_bc(phi)
    ! dy/dx = tc*(-4*x + 82)
    do i = xlim1, xlim2
        dydx = tc*(-4*x(i) + 82)
-       phi(i,1) = phi(i,2) - Uinf*dy*dydx
+       phi(i,1) = phi(i,2) - Uinf*dy0*dydx
    end do
 end subroutine
 
@@ -100,8 +109,8 @@ subroutine gauss_update(phi, err)
    real(dp)                  , intent(out)   :: err
    real(dp), dimension(3:nx-1, 2:ny-1) :: a, b, c, d, e, g
    real(dp) :: maxphi, maxerr, corr
-   integer :: i, j, row
-   maxphi = maxval(phi)
+   integer :: i, j
+   maxphi = maxval(abs(phi))
    maxerr = 0
    call calc_coeffs(phi, a, b, c, d, e, g)
 !!!!!!! In which order do we loop? !!!!!!
@@ -129,7 +138,7 @@ subroutine gauss_line_update(phi, err)
    real(dp), dimension(3:ny-1) :: l
    real(dp), dimension(2:ny-2) :: u
    real(dp) :: maxphi, maxerr
-   integer :: i, j, row
+   integer :: i, j
    maxphi = maxval(phi)
    call calc_coeffs(phi, a, b, c, d, e, g)
    maxerr = 0
@@ -169,10 +178,7 @@ subroutine solve(phi, r, t, iters)
    ! Initialize solution field
    phi = 0
    ! Set constants
-   Uinf = 1
-   mMinf2 = (1 - Minf**2)
-   gp1m2u = (gamma + 1)*Minf**2/Uinf
-   call calc_xlims
+   call init
    ! Start timer and solve
    call cpu_time(tic)
    do k = 1, itermax
@@ -189,36 +195,9 @@ subroutine solve(phi, r, t, iters)
            write(*,*) "Converged after ", k, " iterations in ", t(k), " seconds."
            exit
        end if
+       if (mod(k, 1000) == 0) write(*,*) k, err
    end do
    iters = k
 end subroutine
 
-subroutine gauss_line_solve(phi, r, t, iters)
-   real(dp), dimension(nx,ny), intent(out) :: phi
-   real(dp), dimension(:)    , intent(out) :: r, t
-   integer                   , intent(out) :: iters
-   integer :: k
-   real(dp) :: tic, toc, err
-   ! Initialize solution field
-   phi = 0
-   ! Set constants
-   Uinf = 1
-   mMinf2 = (1 - Minf**2)
-   gp1m2u = (gamma + 1)*Minf**2/Uinf
-   call calc_xlims
-   ! Start timer and solve
-   call cpu_time(tic)
-   do k = 1, itermax
-       call gauss_update(phi, err)
-       call apply_neumann_bc(phi)
-       r(k) = err
-       call cpu_time(toc)
-       t(k) = toc - tic
-       if (err .lt. tol) then
-           write(*,*) "Converged after ", k, " iterations in ", t(k), " seconds."
-           exit
-       end if
-   end do
-   iters = k
-end subroutine
 end module
