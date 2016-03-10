@@ -18,7 +18,7 @@ subroutine post(phi, u, up, v, M, P, Cp)
     u = up + Uinf
     ! Calculate v = vp
     v(:,1) = (phi(:,2) - phi(:,1))/(y(2) - y(1))
-    v(:,ny) = (phi(:,ny) - phi(ny-1,:))/(y(ny) - y(ny-1))
+    v(:,ny) = (phi(:,ny) - phi(:,ny-1))/(y(ny) - y(ny-1))
     do j = 2, ny-1
         v(:,j) = (phi(:,j+1) - phi(:,j-1))/(y(j+1) - y(j-1))
     end do
