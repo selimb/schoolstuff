@@ -5,6 +5,8 @@ import os
 from pprint import pformat
 import shutil
 import subprocess
+
+
 params = dict(
    mach=0,
    solverID=1,
@@ -22,8 +24,26 @@ GRIDS = [
 ]
 dm = 0.02
 MACHS = np.arange(0.8, 0.9+dm, dm)
-FOLDER_MACHINE = 'dat_machine'
-FOLDER_FINER = 'dat_finer'
+
+MACHINE = dict(
+    folder='dat_machine',
+    tol=1e-15,
+    grids=[GRIDS[0]],
+    solvers=SOLVERS,
+    machs=MACHS
+)
+FINER = dict(
+    folder='dat_finer',
+    grids=GRIDS[1:],
+    solvers=[SOLVERS[0]],
+    machs=MACHS,
+)
+
+__all__ = []
+for var in locals().keys():
+    if var == var.upper():
+        __all__.append(var)
+
 
 def modify_param(name, val):
     filename = 'input.prm'
@@ -89,21 +109,11 @@ def run_cases(folder, tol, grids, solvers, machs):
 
 def run_machine():
     print('Running Machine Precision stuff')
-    tol = 1e-15
-    folder = FOLDER_MACHINE
-    grid = GRIDS[0]
-    solvers = SOLVERS
-    machs = MACHS
-    run_cases(folder, tol, [grid,], solvers, machs)
+    run_cases(**MACHINE)
 
 def run_finer():
     print('Running finer grids (GS only)')
-    tol = 1e-9
-    folder = FOLDER_FINER
-    grids = GRIDS[1:]
-    solver = SOLVERS[0]
-    machs = MACHS
-    run_cases(folder, tol, grids, [solver,], machs)
+    run_cases(**FINER)
 
 def run_all():
     print('Running all cases')
