@@ -23,4 +23,5 @@ module params
    real(dp), parameter :: Pinf = 1
    real(dp) :: Minf
    integer :: solverID
+   real(dp) :: tol
 end module

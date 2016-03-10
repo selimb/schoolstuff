@@ -1,3 +1,4 @@
+from collections import namedtuple
 import numpy as np
 from glob import glob
 import os
@@ -7,11 +8,22 @@ import subprocess
 params = dict(
    mach=0,
    solverID=1,
+   tol=2,
 )
-solvers = ['Regular', 'Line-Implicit']
-grids = ['grid_coarse', 'grid_medium', 'grid_fine']
+Solver = namedtuple('Solver', ['name', 'ID'])
+SOLVERS = [
+    Solver('GS', 1),
+    Solver('LI', 2),
+]
+GRIDS = [
+    'grid_coarse',
+    'grid_medium',
+    'grid_fine',
+]
 dm = 0.02
 MACHS = np.arange(0.8, 0.9+dm, dm)
+FOLDER_MACHINE = 'dat_machine'
+FOLDER_FINER = 'dat_finer'
 
 def modify_param(name, val):
     filename = 'input.prm'
@@ -27,9 +39,11 @@ def run():
     out = subprocess.check_output('./bin/solver.out')
     return out
 
-def move_dat(folder, prefix):
+def mkdir(folder):
     if not os.path.exists(folder):
         os.mkdir(folder)
+
+def move_dat(folder, prefix):
     datafiles = glob('*.dat')
     for oldpath in datafiles:
         filename = os.path.basename(oldpath)
@@ -51,17 +65,50 @@ def mk_prefix(grid, solver, mach):
     prefix = '%s_%s_%.2f' % (grid_suffix, solver, mach)
     return prefix
 
-def run_all():
-    print('Running all cases')
+def write_tol(folder, tol):
+    fname = os.path.join(folder, 'tol')
+    s = '%.2e' % tol
+    with open(fname, 'w') as f:
+        f.write(s)
+
+def run_cases(folder, tol, grids, solvers, machs):
+    mkdir(folder)
+    modify_param('tol', tol)
+    write_tol(folder, tol)
+    print('Tolerance: %.2e' % tol)
     for grid in grids:
         modify_grid(grid)
-        for solverID, solver in enumerate(solvers, start=1):
-            modify_param('solverID', solverID)
-            for mach in MACHS:
+        for solver in solvers:
+            modify_param('solverID', solver.ID)
+            for mach in machs:
                 modify_param('mach', mach)
+                prefix = mk_prefix(grid, solver.name, mach)
                 print('Running %s' % prefix)
                 print(run())
-                move_dat('dat', prefix)
+                move_dat(folder, prefix)
+
+def run_machine():
+    print('Running Machine Precision stuff')
+    tol = 1e-15
+    folder = FOLDER_MACHINE
+    grid = GRIDS[0]
+    solvers = SOLVERS
+    machs = MACHS
+    run_cases(folder, tol, [grid,], solvers, machs)
+
+def run_finer():
+    print('Running finer grids (GS only)')
+    tol = 1e-9
+    folder = FOLDER_FINER
+    grids = GRIDS[1:]
+    solver = SOLVERS[0]
+    machs = MACHS
+    run_cases(folder, tol, grids, [solver,], machs)
+
+def run_all():
+    print('Running all cases')
+    run_machine()
+    run_finer()
 
 if __name__ == '__main__':
     run_all()

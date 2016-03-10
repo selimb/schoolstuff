@@ -1,10 +1,10 @@
 module solver
 use types, only: dp
 use grid, only: nx, ny, x, y
-use params, only: Minf, solverID, gamma, Ttot_in, Rgas
+use params, only: Minf, solverID, gamma, Ttot_in, Rgas, tol
 implicit none
-real(dp), public, parameter :: tol = 1e-15
-integer, public, parameter  :: itermax = 1e7
+integer, public, parameter  :: itermax = 1e6
+integer, public, parameter  :: every = itermax
 real(dp), public :: Uinf, ainf
 private
 real(dp) :: dy0, mMinf2, gp1m2u
@@ -182,6 +182,8 @@ subroutine solve(phi, r, t, iters)
    ! Set constants
    call init
    ! Start timer and solve
+   write(*,*) "Tolerance:", tol
+   write(*,*) "Max Iterations:", itermax
    call cpu_time(tic)
    do k = 1, itermax
        call apply_neumann_bc(phi)
@@ -196,7 +198,7 @@ subroutine solve(phi, r, t, iters)
        if (err .lt. tol) then
            exit
        end if
-!      if (mod(k, 25000) == 0) write(*,*) k, err
+       if (mod(k, every) == 0) write(*,*) k, err
    end do
    iters = k
    write(*,*) "Converged after ", iters, " iterations in ", t(iters), " seconds."

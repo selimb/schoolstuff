@@ -1,7 +1,7 @@
 program main
     use types, only: dp
     use grid, only: nx, ny, x, y
-    use params, only: Minf, solverID
+    use params, only: Minf, solverID, tol
     use solver, only: itermax, solve
     use params
     implicit none
@@ -12,6 +12,7 @@ program main
     open(100, file='input.prm')
     read(100,*) Minf
     read(100,*) solverID
+    read(100,*) tol
     open(101, file='grid')
     read(101,*) nx, ny
     allocate(x(nx))
