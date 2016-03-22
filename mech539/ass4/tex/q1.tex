@@ -1,0 +1,44 @@
+\section{Number of panels}
+
+The panel method essentially consists in discretizing an integral with a finite linear combination of
+simple solutions, in this case doublets with a constant strength over the length of each panel.
+Thus, it is expected that increasing the number of terms in the sum would increase the
+accuracy of the discrete solution relative to the analytical one. Moreover, panels all have
+equal lengths in PABLO -- this is important.
+
+The pressure distributions are shown in~\Cref{fig:q1}. Most of the discrepancy in pressure
+results is found at the airfoil's extremities, specifically the leading edge and trailing edge.
+This can be explained by two factors:
+\begin{enumerate}
+    \item The increased curvature of the airfoil geometry at the leading edge, which requires a higher
+        number of panels to be modelled correctly by flat panels.
+    \item The increased curvature of the pressure distribution at the leading and trailing edge, which
+        again requires a higher number of panels since panels are of constant strength.
+\end{enumerate}
+Unfortunately, determining the minimum necessary number of panels to acquire a reasonably accurate
+solution would require eyeballing.
+
+Lift and drag coefficients are tabulated in~\Cref{tab:q1}. It should be noted that the
+precision on the drag coefficients output by PABLO was limited to 4 digits. Thus, lift coefficient
+data is more relevant. From these results, one may say that using as little as 50 panels is sufficient
+if the user is fine with a $\Delta C_L$ of 1\%. $\Delta C_L$ as a function of the number of panels
+NP is calculated as follows:
+\begin{equation*}
+    \Delta C_L(NP) = \frac{|C_L(NP) - C_L(100)|}{C_L(100)}
+\end{equation*}
+Of course, this is dependent on the geometry and flow parameters.
+\begin{table}
+    \centering
+    \caption{Effect of number of panels (NP) on lift and drag coefficients. $\Delta C_L$ and $\Delta C_D$
+        are calculated with respect to the values obtained for NP = 100.}
+    \label{tab:q1}
+    \input{tableq1}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{./figs/q1.pdf}
+    \caption{Effect of number of panels (NP) on pressure distribution over the airfoil and at
+        select locations.}\label{fig:q1}
+\end{figure}
+
