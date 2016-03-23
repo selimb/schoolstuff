@@ -18,11 +18,9 @@ This can be explained by two factors:
 Unfortunately, determining the minimum necessary number of panels to acquire a reasonably accurate
 solution would require eyeballing.
 
-Lift and drag coefficients are tabulated in~\Cref{tab:q1}. It should be noted that the
-precision on the drag coefficients output by PABLO was limited to 4 digits. Thus, lift coefficient
-data is more relevant. From these results, one may say that using as little as 50 panels is sufficient
-if the user is fine with a $\Delta C_L$ of 1\%. $\Delta C_L$ as a function of the number of panels
-NP is calculated as follows:
+Lift and drag coefficients are tabulated in~\Cref{tab:q1}. From these results, one may say that using as
+little as 60 panels is sufficient if the user is fine with a $\Delta C_L$ and $\Delta C_D$ below 1\%. $\Delta C_L$ as
+a function of the number of panels NP is calculated as follows:
 \begin{equation*}
     \Delta C_L(NP) = \frac{|C_L(NP) - C_L(100)|}{C_L(100)}
 \end{equation*}
