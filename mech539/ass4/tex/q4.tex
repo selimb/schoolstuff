@@ -1,0 +1,99 @@
+\section{Airfoil comparison}
+\subsection{Drag polar}
+The drag polars are shown in~\Cref{fig:q4_polars}. Typically, a higher lift-to-drag (L/D) ratio
+is one of the most imperative goals in airfoil design.
+Since constant L/D lines have also been plotted, the comparison becomes straight-forward:
+\begin{itemize}
+    \item The NACA 0012 airfoil has a lower L/D ratio than the other two airfoils
+        for any value of lift coefficient.
+    \item Except at low lift coefficients, the DAE31 airfoil is the best airfoil in terms
+        of L/D ratio.
+\end{itemize}
+The other factor that may be considered is the following: it is desirable for an airfoil
+to attain high lift at relatively low angles of attack. This is especially true when
+doing simulations with a potential flow solver, since it cannot predict stall although
+we know it occurs for all airfoils at some point. Comparing airfoils this way basically
+leads to the same ranking as above.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{./figs/q4_polars}
+    \caption{Drag polars for all three airfoils. Drag at $C_L = 1$ is shown as
+        empty circle.}\label{fig:q4_polars}
+\end{figure}
+
+\subsection{Drag at fixed lift}
+The drag at lift coefficient equal to 1.0 for all three airfoils is tabulated in
+~\Cref{tab:q4}. It has been interpolated using the data shown in the drag polars
+plot. The table shows that the DAE31 airfoil exhibits the lowest drag coefficient
+at that particular lift coefficient. GA(W) is the second best and NACA0012 is the
+worst out of the three.
+
+For the sake of completeness, it should be noted that low drag coefficients are usually
+desirable when designing airfoils for aerodynamics.
+\begin{table}
+    \centering
+    \caption{Drag coefficients at equivalent lift coefficient of 1.0}
+    \label{tab:q4}
+    \input{tableq4}
+\end{table}
+
+\subsection{Pressure distribution}
+The pressure distribution for all airfoils is shown on~\Cref{fig:q4_cp}. The following
+observations can be made:
+\begin{itemize}
+    \item The NACA0012 and GA airfoils produce most of their lift close to the leading edge;
+        that is where the difference in pressure between top and bottom surface is greatest.
+        In fact, compared to DAE31, GA and NACA exhibit large peaks in pressure
+        right at the leading edge, after which the pressure quickly increases on the top surface
+        and decreases on the bottom surface.
+    \item GA produces more lift near the trailing edge than NACA, which produces
+        low lift after around 80\% of the length.
+    \item The DAE31 airfoil produces most of its lift over the first 60\%. The pressure
+        on the bottom surface remains relatively constant over most of the length, and the
+        pressure on the top surface decreases way more gradually than for the other two
+        airfoils.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{./figs/q4_cp}
+    \caption{Pressure distribution for all three airfoils at angle of attack of
+        4 degrees.}\label{fig:q4_cp}
+\end{figure}
+
+\subsection{Skin friction}
+Skin friction plots are shown in~\Cref{fig:q4_cf}. Transition locations are also shown.
+It can be seen that, on the upper surface, the flow transitions at around 15\%
+for both NACA and GA while the transition occurs at 37\% for DAE. The effect
+of transition on skin friction coefficient is easy to see: transition leads to a sharp increase
+in skin friction coefficient. In fact, that is how it was detected. This can physically
+be explained by the fact that turbulent flow has a larger velocity gradient in the normal
+direction, mathematically written as $\partial u/\partial y$ in this case, than laminar flow.
+The shear stress at the wall $\tau_w$ is given by:
+$$
+    \tau_w = \mu \left(\frac{\partial u}{\partial y}\right)_{y=0}
+$$
+and thus increases linearly with $\partial u/\partial y$. The skin friction coefficient
+is nothing but a non-dimensionalized $\tau_w$.
+
+The transition location can also be linked to the pressure distribution plots in the previous
+section as follows:
+transition leads to a sharp increase in pressure. In other words, the earlier the transition
+the earlier the pressure tends to increase back up to freestream conditions. Of course, this
+matches the results shown in~\Cref{fig:q4_cp}, meaning that $C_P$ for DAE stays relatively
+high much longer than for GA and NACA.
+
+The same can be said for the lower surface, except that in case pressure decreases back to
+freestream value when transition occurs. Interestingly, there is no transition on the lower surface
+for DAE! Consequently, the lower surface pressure stays relatively constant over most of the
+airfoil's length.
+
+Finally, the following conclusion can be made: delaying the transition as much
+as possible leads to better overall aerodynamic performance.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{./figs/q4_cf}
+    \caption{Skin friction coefficient for all airfoils at an angle of attack of
+        4 degrees.}\label{fig:q4_cf}
+\end{figure}
+

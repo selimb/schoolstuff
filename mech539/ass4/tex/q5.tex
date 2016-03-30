@@ -1,0 +1,68 @@
+\section{NACA airfoil investigations}
+
+\subsection{Effect of thickness}
+The effects of thickness on aerodynamic performance is shown in
+~\Cref{fig:q5_thickness}. Since there is no camber, the pressure distribution
+on the top and bottom surfaces is identical. Moreover, increasing the thickness
+also increases the drag since the airfoil becomes more and more blunt and
+wall-like. Finally, transition location changes only slightly with thickness variation.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{./figs/q5_thickness_cp}
+    \end{subfigure}
+    \\
+    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{./figs/q5_thickness_polar}
+    \end{subfigure}
+    \caption{Effect of thickness on aerodynamics}\label{fig:q5_thickness}
+\end{figure}
+
+\subsection{Effect of camber}
+The effects of camber on aerodynamic performance is shown in
+~\Cref{fig:q5_camber}. Increasing camber has a very noticeable effect on the
+pressure difference between top and bottom surfaces; pressure at the top is decreased
+and pressure at the bottom is increased as the camber increases. This is
+usually desirable. The transition location on the bottom surface is pushed toward
+the leading edge as the camber is increased, while the transition on the upper surface is pushed
+back toward the trailing edge for camber values less or equal to 6.
+
+Increasing the camber past 6 has a dramatic effect on drag, as seen in the drag
+plot -- the drag slowly increases with camber prior to that. This can be attributed to the
+fact that \textbf{laminar separation}, as opposed to turbulent transition, occurs for camber values higher
+than 6, as shown in the $C_P$ plot. Separation is generally to be avoided for this exact reason,
+i.e. it increases the drag significantly.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{./figs/q5_camber_cp}
+    \end{subfigure}
+    \\
+    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{./figs/q5_camber_polar}
+    \end{subfigure}
+    \caption{Effect of camber on aerodynamics}\label{fig:q5_camber}
+\end{figure}
+
+\subsection{Effect of camber location}
+The effects of camber location on aerodynamic performance is shown in
+~\Cref{fig:q5_camberloc}. Laminar separation on the top surface only
+occurs for camber locations 2 and 3, and only for 2 on the bottom surface.
+This obviously leads to increased drag for those values of camber location.
+
+Past camber locations of 3 and until 5, transition location on the
+upper surface is delayed, i.e.
+pushed back toward the trailing edge. After camber location values of 5, the
+transition location moves back toward the leading edge again. This explains why the drag
+is lowest for a camber location value of 5.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{./figs/q5_camberloc_cp}
+    \end{subfigure}
+    \\
+    \begin{subfigure}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{./figs/q5_camberloc_polar}
+    \end{subfigure}
+    \caption{Effect of camber location on aerodynamics}\label{fig:q5_camberloc}
+\end{figure}

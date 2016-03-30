@@ -7,7 +7,7 @@ $c_P$ everywhere on the bottom surface.
 
 One could also look at it in terms of velocity: increasing the angle of attack also has a positive
 effect on the acceleration of the fluid at the leading edge. In other words, the flow turns more
-more agressively. Conversely, the velocity decreases as the angle of attack increases.
+more agressively.
 
 \begin{figure}
     \centering
@@ -18,3 +18,24 @@ more agressively. Conversely, the velocity decreases as the angle of attack incr
 \end{figure}
 
 \subsection{Lift and drag}
+The lift curve slope and drag polar are shown in~\Cref{fig:q3_lift}. From the previous
+section on the differences in pressure coefficient, it is expected that increasing the
+angle of attack also increase lift, since lift is generated from the difference in pressure
+between the top and bottom surface. Moreover, it can be seen that there is a
+perfectly linear fit between the angle of attack and the lift coefficient: increasing
+the angle of attack by 1 degree increases the lift coefficient by 0.116.
+
+The drag polar reveals a particularly interesting result: increasing the lift coefficient becomes
+more and more costly in terms of drag coefficient. In other words, the ratio of lift over drag
+decreases as the lift coefficient, and thus angle of attack, increases. I believe the only source
+of drag in these simulations is \textit{pressure drag}: the horizontal
+component of the integral of pressure over the airfoil surface. Geometrically speaking, it is expected
+that increasing the angle of attack would also ``rotate'' the pressure integral vector, i.e. increase
+the contribution from the horizontal component.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{./figs/q3_lift}
+    \caption{Lift curve slope and drag polar.}\label{fig:q3_lift}
+\end{figure}
+
+
