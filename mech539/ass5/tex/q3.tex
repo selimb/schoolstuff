@@ -1,5 +1,51 @@
+\section{Aerodynamic performance}
+Aerodynamic coefficients are tabulated in~\Cref{tab:aero}. Results were compared
+to a 1988 paper by Ladson~\cite{ladson1988effects}. This paper presents experimental data of
+the low-speed aerodynamic characteristics of the NACA 0012 airfoil, which is
+in line with this project.
+
+The rest of this section will be split between an analysis of the MECH 539 results alone and
+a comparison between MECH 539 and experimental data.
+
+
+\subsection{MECH 539 results}
+Let's look at lift first. Most textbooks will explain lift as a difference in pressure
+between the upper and bottom surface, which results in a net upwards force. In other words,
+there is usually no mention of viscous forces when considering lift. Thus, it makes sense
+that, according to~\Cref{tab:aero}, $c_{l_p}$ is essentially the sole contributor to
+lift.
+
+Now, the same cannot be said of drag, where $c_{d_f}$ and $c_{d_p}$ contribute almost
+equally to the total drag. Additionally, it can be said that viscous forces
+primarily contribute to drag, while pressure forces have a large relative impact on both
+lift and drag.
+
+Finally, it can be seen that $c_l$ is around 2 orders of magnitude higher than $c_d$, i.e.
+$l/d \approx 100$.
+\subsection{Comparison with experimental}
+Experimental data in~\Cref{tab:aero} was obtained from Table I
+in~\cite{ladson1988effects}. The latter table lists values of lift and drag coefficients
+-- but not the contributions from viscous and pressure forces -- at a Reynolds number of 2
+million and Mach number of 0.15 for various angles of attack. While the Mach number
+does not correspond to that of the provided MECH 539 results (0.1) both are low enough
+that the flow is essentially incompressible, making the Reynolds number a more important
+value to match -- and these match exactly. In other words, changes in Mach number
+at subsonic speeds should not be expected to significantly affect aerdoynamic performance
+as long as the Reynolds number is kept constant.  Finally, the experimental
+data needed to be interpolated in order to obtain values at $\alpha = 8.0$.
+
+The MECH 539 and Ladson results are of the same orders of magnitude but differ by around
+3\% and 20\% for lift and drag respectively. Of course, sources of discrepancy in
+the experimental data are always expected, especially in the presence of turbulent flow
+since it is inherently unsteady and very sensitive to inputs~\cite{pope}.
+
+Moreover, as will be discussed in~\Cref{sec:bl}, the numerical simulation predicts
+three zones of recirculation on the airfoil. Since a RANS solver was used, it is expected
+that values should be slightly off, as was discussed in class.
 \begin{table}
     \centering
-    \caption{Fucking caption}
+    \caption{Aerodynamic coefficients of provided data and experimental data from
+        ~\cite{ladson1988effects}.}
+    \label{tab:aero}
     \input{tableq3}
 \end{table}
