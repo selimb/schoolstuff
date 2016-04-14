@@ -50,7 +50,7 @@ Thus, the fluid would be in the turbulent regime over most of the airfoil!
 
 Of course, this scenario based on a heuristic, however the \uplu plots
 will show it to be true! The \uplu and \yplus plots before and after separation
-are provided in~\Cref{fig:uplus}. For completeness, the various wall regions are defined
+are provided in~\Cref{fig:uplus_upper}. For completeness, the various wall regions are defined
 in~\Cref{tab:wallregions}. Let's first discuss the plot after separation and then
 before separation.
 
@@ -79,30 +79,30 @@ and the $\yplus = \uplu$ curve. On the other hand, agreement is not so good in t
 MECH 539 curve is approximately linear (on a log scale) in that region. Seeing as how the law of the wall
 is universal~\cite{kim}, that large a discrepancy may be attributed to either the solver,
 the inherent error that comes with solving the RANS equations, to the post-processing
-or a combination of those, although I dare doubt the latter is at fault. In any case,
-the flow after separation may definitely be said to be turbulent, or at least exhibit some effects of
-turbulence.
+or a combination of those. In any case, the flow after separation exhibits some turbulence behavior.
 
 \subsubsection{Before separation}
 The curve follows the $\yplus = \uplus$ curve until the end of the viscous wall region and then plateaus.
-In other words, the effects of the Reynold stress have negligible effects in the entire inner layer, especially
+In other words, the effects of the Reynold stress are negligible in the entire inner layer, especially
 in the viscous wall region. Hence, the flow can be said to be laminar, since viscous contributions
-to shear stress dominate.
+to shear stress dominate throughout the whole viscous wall region.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.85\textwidth]{./figs/uplus_upper.pdf}
     \caption{Dimensionless velocity profile at various locations. The viscous sublayer, buffer layer and
         log-law regions are separated by grid lines (left to right).}
-    \label{fig:uplus}
+    \label{fig:uplus_upper}
 \end{figure}
 
 \subsection{Trailing edge}
 The skin friction coefficient near the trailing edge is shown in~\Cref{fig:cf_te} and streamlines are shown
 in~\Cref{fig:recirculation_te}. Again, the recirculation bubble corresponds to the region of negative
-$c_f$.
+$c_f$. Dimensionless velocity profiles before the bubble (on both surfaces) are shown in~\Cref{fig:uplus_te}.
+Similar to the reasoning above, it can be said that flow on the upper surface is turbulent and flow
+on the lower surface is laminar.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{./figs/cf_te.pdf}
     \caption{Skin friction coefficient near the trailing edge for the upper surface (top) and
@@ -115,4 +115,9 @@ $c_f$.
     \caption{Streamlines on upper and lower surface near trailing edge.}\label{fig:recirculation_te}
 \end{figure}
 
-
+\begin{figure}
+    \centering
+    \includegraphics[width=0.85\textwidth]{./figs/uplus_te.pdf}
+    \caption{Dimensionless velocity profile close to trailing edge before recirculation zones.}
+    \label{fig:uplus_te}
+\end{figure}
