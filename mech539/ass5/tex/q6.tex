@@ -5,15 +5,28 @@ absolute velocity $U/U_\infty$ was plotted, where:
     U &= \sqrt{u^2 + v^2}\\
     U_\infty &= U\big|_{x=-10, y=0}
 \end{align*}
-To make sense of the plots, one should first remember that a zero velocity is imposed at the
-wall boundaries, i.e. over the airfoil surface.
-%TODO
-\newpage
-\begin{landscape}
-    \begin{figure}
-        \centering
-        \includegraphics[width=1.3\textwidth]{./figs/mom}
-        \caption{Velocity profile at various locations.}\label{fig:mom}
-    \end{figure}
-\end{landscape}
+It should also be noted that interpolation was used in order to get the profile at constant
+$x$, as opposed to plotting a constant $i$ grid line.
+
+Several observations can be made from the plot:
+\begin{enumerate}
+    \item There is indeed a momentum deficit, i.e. a region of lower velocity past the airfoil. This
+        momentum deficit can be explained by the convection of the boundary layer on the airfoil --
+        recall that momentum in the boundary layer is reduced compared to that of the freestream.
+    \item The momentum deficit is gradually \textit{diffused} as it
+        is convected. This is done through viscosity,
+        i.e. the diffusion term in the Navier-Stokes equations.
+    \item The momentum deficit in the wake is directly related to the total drag felt by the
+        airfoil. This can be shown using conservation of momentum around the airfoil (common
+        question in a Fluid Mechanics class). In fact, measuring this deficit is a common
+        way of experimentally determining drag~\cite{genc}.
+    \item The bump moves upwards as $x$ increases. This is merely due to the angle of attack.
+        If we were to plot the profile perpendicular to the flow, this would probably not
+        occur.
+\end{enumerate}
+\begin{figure}
+    \centering
+    \includegraphics[width=1.0\textwidth]{./figs/mom}
+    \caption{Speed profile at various locations.}\label{fig:mom}
+\end{figure}
 
