@@ -72,6 +72,7 @@ C       ---------------------------------------------------------------
             integer ::  i, k, n
             n = size(prim, 2)
             dt = calc_dt(prim)
+            dt = dt*2*sqrt(2.0_dp)
             dt_dx = dt/params%dx
             w0 = calc_w(prim)
             prim_new(:, :) = prim(:, :)
