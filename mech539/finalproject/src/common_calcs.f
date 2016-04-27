@@ -98,4 +98,16 @@ C       Calculate error over all residuals
             real(dp) :: err
             err = maxval(abs(r(1, :)))
         end function
+        pure function calc_ptot(prim) result(ptot)
+            use constants, only: gam, astar
+            real(dp), dimension(5), intent(in) :: prim
+            real(dp) :: ptot
+            real(dp) :: u, p, pow, gg, coef
+            u = prim(2)
+            p = prim(3)
+            gg = (gam - 1)/(gam + 1)
+            pow = gam/(gam - 1)
+            coef = (1 - gg*u**2/astar)**pow
+            ptot = p/coef
+        end function
         end module common_calcs

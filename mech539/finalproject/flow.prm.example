@@ -2,8 +2,8 @@
  params%flx_scheme=1,
  params%timestep_scheme=1,
  params%nx=50,
- params%p_exit_ratio=0.76,
- params%eps=0.218,
- params%tol=1e-15,
+ params%p_exit_ratio=0.8,
+ params%eps=0.3,
+ params%tol=1e-14,
  params%max_iter=100000,
- params%cfl=0.4/
+ params%cfl=0.2/

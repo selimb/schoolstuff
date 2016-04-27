@@ -14,7 +14,7 @@ C       ===============================================================
         use constants
         use inputs, only: read_input_file, params
         use setup, only: init_state, mkgrid
-        use common_calcs, only: calc_err
+        use common_calcs, only: calc_err, calc_ptot
         use timestepping, only: timestep
         implicit none
         real(dp), dimension(:), allocatable :: x, s
@@ -50,12 +50,12 @@ C       ===============================================================
         write(*,*) err(iter)
         n = size(x)
         open(10, file='state.csv')
-        write(10,*) 'x s rho u p e c'
+        write(10,*) 'x s rho u p e c ptot'
         do i = 1, n
             write(10, fmt1, advance='no') x(i)
             write(10, fmt1, advance='no') s(i)
-            prim(3, i) = prim(3, i)/ptot_in
             write(10, fmt5, advance='no') (prim(k, i), k=1,5)
+            write(10, fmt1, advance='no') calc_ptot(prim(:, i))
             write(10, *) ''
         end do
         open(20, file='residuals.csv')

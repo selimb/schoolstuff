@@ -291,7 +291,8 @@ C       Choose a flux evaluation scheme based on input
 C       1 : Scalar dissipation
 C       2 : Steger Warming
 C       3 : Modified Steger Warming
-C       4 : Roe
+C       4 : Corrected Modified Steger Warming
+C       5 : Roe
         function flx_eval(prim, w, f) result (f_edge)
             real(dp), dimension(:, :), intent(in) :: prim
             real(dp), dimension(3, size(prim, 2)), intent(in) :: w, f

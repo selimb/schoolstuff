@@ -11,6 +11,7 @@ def mk_rainbow(l):
 
 
 FLOWPRM_FILE = 'flow.prm'
+PTOT_IN = 2117
 
 class SolverError(Exception):
     pass
@@ -22,15 +23,15 @@ def modify_param(param, new):
     flowprm = read_params()
     open('%s.bak' % FLOWPRM_FILE, 'w').write(flowprm)
 
-    param_line = r' params%{0}={{0}},\n'.format(param)
-    pattern = param_line.format('.*')
-    if re.search(pattern, flowprm) is None:
+    pattern = r'( params%{name}=).*(,|\/)\n'.format(name=param)
+    r = re.search(pattern, flowprm)
+    if r is None:
         print('Could not find a match for \n%s' % pattern)
         return
-
+    replace = r'\g<1>{new}\g<2>\n'.format(new=str(new))
     newflowprm = re.sub(
-        pattern=pattern.format('.*'),
-        repl=param_line.format(str(new)),
+        pattern=pattern,
+        repl=replace,
         string=flowprm)
     open(FLOWPRM_FILE, 'w').write(newflowprm)
 
@@ -83,7 +84,7 @@ def plot_residual(residuals, ax, title_args=None, **kwargs):
 def plot_pressure(state, ax, title_args=None, **kwargs):
     d = dict(linestyle='solid', marker='.', color='b')
     d.update(**kwargs)
-    ax.plot(state['x'], state['p'], **d)
+    ax.plot(state['x'], state['p']/PTOT_IN, **d)
     ax.set_ylabel('$P$')
     ax.set_xlabel('$x$')
     title = 'Pressure distribution'
