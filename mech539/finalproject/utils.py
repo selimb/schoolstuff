@@ -4,11 +4,21 @@ from matplotlib import cm
 import subprocess
 import re
 
-def mk_rainbow(l):
-    cm_subsection = np.linspace(0, 1, len(l))
-    colors = [ cm.rainbow(x) for x in cm_subsection ]
-    return colors
-
+def mk_colors(l):
+    num = len(l)
+    if num == 1:
+        raise ValueError('Really?')
+    if num == 2:
+        return ['b', 'g']
+    if num == 3:
+        return ['b', 'g', 'r']
+    if num == 4:
+        return ['m', 'b', 'g', 'r']
+    if num == 5:
+        return ['m', 'b', 'g', 'darkorange', 'r']
+    if num > 5:
+        cm_subsection = np.linspace(0, 1, num)
+        return [ cm.rainbow(x) for x in cm_subsection ]
 
 FLOWPRM_FILE = 'flow.prm'
 PTOT_IN = 2117
@@ -62,6 +72,8 @@ def plot_mach(state, ax, title_args=None, **kwargs):
     d.update(**kwargs)
     mach = calc_mach(state)
     ax.plot(state['x'], mach, **d)
+    ax.set_yticks([1.0], minor=True)
+    ax.grid(which='minor', axis='y')
     ax.set_ylabel('$M$')
     ax.set_xlabel('$x$')
     title = 'Mach Number distribution'
@@ -85,7 +97,7 @@ def plot_pressure(state, ax, title_args=None, **kwargs):
     d = dict(linestyle='solid', marker='.', color='b')
     d.update(**kwargs)
     ax.plot(state['x'], state['p']/PTOT_IN, **d)
-    ax.set_ylabel('$P$')
+    ax.set_ylabel('$p/p_t$')
     ax.set_xlabel('$x$')
     title = 'Pressure distribution'
     if title_args:

@@ -47,7 +47,13 @@ C       ===============================================================
         write(*,*) 'Number of iterations:'
         write(*,*) iter
         write(*,*) 'Error'
-        write(*,*) err(iter)
+        if (err(iter) .eq. 0) then
+            write(*,*) 'Unconverged!'
+C           Assign NaN
+            prim(:, :) = prim(1, 2)
+        else
+            write(*,*) err(iter)
+        end if
         n = size(x)
         open(10, file='state.csv')
         write(10,*) 'x s rho u p e c ptot'
