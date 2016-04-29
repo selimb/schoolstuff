@@ -1,0 +1,56 @@
+\section{Spatial discretization scheme study}
+Solver Parameters:
+\begin{description}[noitemsep]
+    \item[Timestepping Scheme:] Euler Explicit
+    \item[CFL:] 0.4
+    \item[Grid Points:] 100
+    \item[$\epsilon$:] 0.4
+    \item[\pexit:] $0.72 p_t$
+\end{description}
+Nomenclature:
+\begin{description}[noitemsep]
+    \item[SD:] Scalar Dissipation
+    \item[SW:] Steger-Warming
+    \item[MSW:] Modified Steger-Warming
+    \item[CMSW:] Corrected-Modified Steger-Warming
+    \item[Roe:] Roe
+\end{description}
+
+Results are shown in~\Cref{fig:q4}. The following can be observed:
+\begin{itemize}
+    \item SD is the most dissipative out of all the schemes since it leads to the smoothest
+        shock. SW is the second most dissipative. MSW tries to correct for the latter
+        but results in a lack of dissipation and significant wiggles.
+        CMSW fixes this and leads to a relatively
+        good solution but still produces some wiggles around the shock. Finally, Roe
+        can be seen to be the best scheme.
+    \item A very noticeable bump can be observed in the SW solution right when the flow
+        turns supersonic. This is due to the lack of continuity from switching to
+        $A_+$ to $A_-$, although it is possible that $\epsilon$ was too small
+        in this case.
+    \item While CMSW is the best Steger-Warming scheme, it is also the most time-consuming
+        since it involves usage of both SW and MSW. However, less iterations are required
+        than MSW but more than SW.
+    \item SD takes the least amount of time and iterations.
+    \item Roe takes more iterations than Sw, but less than CMSW. However, it is much quicker
+        in terms of time.
+\end{itemize}
+Overall, Roe is the best scheme when considering accuracy, iterations/time taken to
+converge and shock sharpness.
+
+Total pressure loss is tabulated in~\Cref{tab:q4_ploss}. Roe, CMSW and MSw show the
+same pressure loss since they most accurately capture the shock intensity.
+
+\begin{table}
+    \centering
+    \caption{Effect of spatial discretization scheme on total pressure loss}
+    \label{tab:q4_ploss}
+    \input{table_q4_ploss}
+\end{table}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{./figs/q4}
+    \caption{Effect on spatial discretization scheme on solution.}\label{fig:q4}
+\end{figure}
+
+

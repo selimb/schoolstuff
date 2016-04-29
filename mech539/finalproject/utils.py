@@ -4,6 +4,13 @@ from matplotlib import cm
 import subprocess
 import re
 
+def hide_ax(ax):
+    ax.spines['top'].set_color('none')
+    ax.spines['bottom'].set_color('none')
+    ax.spines['left'].set_color('none')
+    ax.spines['right'].set_color('none')
+    ax.tick_params(labelcolor='w', top='off', bottom='off', left='off', right='off')
+
 def mk_colors(l):
     num = len(l)
     if num == 1:
@@ -81,17 +88,15 @@ def plot_mach(state, ax, title_args=None, **kwargs):
         title += title_args
     ax.set_title(title)
 
-def plot_residual(residuals, ax, title_args=None, **kwargs):
+def plot_residual(residuals, ax, do_labels=True, **kwargs):
     d = dict(linestyle='solid', color='b')
     d.update(**kwargs)
     ax.semilogy(residuals, **d)
-    ax.set_ylabel('Residuals')
-    ax.set_xlabel('Iterations')
-#     ax.set_ylim(0, 1)
-    title = 'Convergence of density residual'
-    if title_args:
-        title += title_args
-    ax.set_title(title)
+    if do_labels:
+        ax.set_ylabel('Residuals')
+        ax.set_xlabel('Iterations')
+        title = 'Convergence of density residual'
+        ax.set_title(title)
 
 def plot_pressure(state, ax, title_args=None, **kwargs):
     d = dict(linestyle='solid', marker='.', color='b')
@@ -104,15 +109,14 @@ def plot_pressure(state, ax, title_args=None, **kwargs):
         title += title_args
     ax.set_title(title)
 
-def plot_residual_time(residuals, time, ax, title_args=None, **kwargs):
+def plot_residual_time(residuals, time, ax, do_labels=True, **kwargs):
     d = dict(linestyle='solid', color='b')
     d.update(**kwargs)
     ax.semilogy(time, residuals, **d)
-    ax.set_ylabel('Residuals')
-    ax.set_xlabel('CPU time [s]')
+    if do_labels:
+        ax.set_ylabel('Residuals')
+        ax.set_xlabel('CPU time [s]')
 #     ax.set_ylim(0, 1)
-    title = 'Convergence of density residual'
-    if title_args:
-        title += title_args
-    ax.set_title(title)
+        title = 'Convergence of density residual'
+        ax.set_title(title)
 

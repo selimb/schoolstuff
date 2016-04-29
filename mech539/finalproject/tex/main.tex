@@ -5,7 +5,27 @@
 \mytitlepage
 \newpage
 % Begin writing here.
-\begin{quote}
-    \textbf{A Reynolds number of 2.88 million was used for every question.}
-\end{quote}
+\newcommand{\pexit}{\ensuremath{p_{\mathrm{exit}}}}
+\section*{Solver Information}
+\begin{description}[noitemsep]
+    \item[Programming Language:] Fortran
+    \item[Precision:] Double
+    \item[Convergence Criteria:] $r^{(k+1)} < 10^{-14}$
+\end{description}
+
+The residual for each iteration is calculated as:
+$$
+r^{(k+1)} = \max_i \left( \rho^{(k+1)}_i - \rho^{(k)}_i \right)
+$$
+
+\newpage
+\input{q1}
+\newpage
+\input{q2}
+\newpage
+\input{q3}
+\newpage
+\input{q4}
+\newpage
+\input{q5}
 \end{document}

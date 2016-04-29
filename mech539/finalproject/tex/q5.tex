@@ -1,0 +1,37 @@
+\section{Temporal discretization scheme study}
+Solver Parameters:
+\begin{description}[noitemsep]
+    \item[Spatial Scheme:] Roe
+    \item[CFL:] 0.4
+    \item[Grid Points:] 100
+    \item[\pexit:] $0.72 p_t$
+\end{description}
+The convergence of density residual is shown in~\Cref{fig:q5}. It should be
+noted that $\Delta t$ was the same for both schemes. While Euler explicit
+takes slightly more iterations to converge, each iteration is much less costly and thus
+less total time is taken. This goes to show that sometimes the simplest schemes are
+good enough.
+
+However, the maximum allowable $\Delta t$ is higher for Jameson's. This is tabulated
+in~\Cref{tab:q5} in terms of CFL number. Still, Euler is faster even with its lower
+CFL limit.
+\begin{table}[H]
+    \centering
+    \caption{Effect of timestepping scheme on maximum allowable CFL and
+        CPU time taken to converge with that CFL. The CFL was incremented in
+        steps of 0.05.}
+    \label{tab:q5}
+    \input{table_q5}
+\end{table}
+
+It would be interesting to compare the accuracy of Jameson and Euler explicit with similar
+CPU times. In other words, one must wonder ``how accurate a solution can I get in a given
+time?''. However, no exact solution is available (or requested) for this project.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{./figs/q5}
+    \caption{Effect of timestepping scheme on convergence}\label{fig:q5}
+\end{figure}
+
+
