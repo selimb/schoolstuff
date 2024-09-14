@@ -1,0 +1,16 @@
+#!MC 1410
+$!VarSet |MFBD| = '/home/selimb/Projects/syn3d/high_lift_testcase'
+# $!READDATASET  '"|MFBD|/modded.dat" '
+#   READDATAOPTION = NEW
+#   RESETSTYLE = YES
+#   VARLOADMODE = BYNAME
+#   ASSIGNSTRANDIDS = YES
+#   VARNAMELIST = '"X" "Y" "I" "J" "JI" "BLOCK"'
+$!FIELDMAP [1-|NUMZONES|]  EDGELAYER{
+    COLOR = PURPLE
+    LINETHICKNESS = 0.8
+}
+$!FIELDLAYERS SHOWMESH = YES
+$!FIELDLAYERS SHOWEDGE = YES
+$!REDRAWALL
+$!RemoveVar |MFBD|

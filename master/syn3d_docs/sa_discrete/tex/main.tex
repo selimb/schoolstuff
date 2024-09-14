@@ -1,0 +1,311 @@
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\begin{document}
+\maketitle
+% Begin writing here.
+\newcommand{\sa}{\ensuremath{\hat{\nu}}}
+\newcommand{\diff}[2]{\ensuremath{
+    \frac{\partial #1}{\partial #2}
+}}
+\newcommand{\cmu}{\ensuremath{
+    \sqrt{\gamma}\frac{M_\infty}{\mathit{Re}}
+}}
+\section{Governing Equation}
+The Spalart-Allmaras model solves for a variable \sa ~ related to the eddy viscosity
+through
+\begin{equation*}
+    \mu_T = \rho\sa f_{v_1}
+\end{equation*}
+where
+\begin{align*}
+    f_{v_1} &= \frac{\chi^3}{\chi^3 + C_{v_1}^3}\\
+    \chi &= \frac{\sa}{\nu}
+\end{align*}
+The governing transport equation is then:
+\begin{equation*}
+    \diff{\sa}{t} + \mathcal{A} = \mathcal{P} + \mathcal{D} + \mathcal{SD} + \mathcal{FD}
+\end{equation*}
+where
+\begin{align*}
+    \text{Advection} :\quad &\mathcal{A} = u_j\diff{\sa}{x_j}\\
+    \text{Production} :\quad &\mathcal{P} = C_{b_1}(1 - f_{t_2})\Omega\sa\\
+    \text{Destruction} :\quad &\mathcal{D} = \cmu\left\{
+        C_{b_1}\left[(1 - f_{t_2})f_{v_2} + f_{t_2}\right]\frac{1}{\kappa^2} - C_{w_1}f_w
+    \right\} \left(\frac{\sa}{d}\right)^2
+    \\
+    \text{Second-Order Diffusion} :\quad &\mathcal{SD} = \cmu \frac{1}{\sigma}\diff{}{x_j}\left[
+            \left(\sa + \nu\right)\diff{\sa}{x_j}
+    \right]
+    \\
+    \text{First-Order Diffusion} :\quad &\mathcal{FD} = \cmu \frac{C_{b_2}}{\sigma}
+        \diff{\sa}{x_i}\diff{\sa}{x_i}
+\end{align*}
+The terms are grouped slightly differently than in the original reference because of the common
+nondimensionalization factors.
+
+\section{Solving Strategy and Backward Euler Implicit Method}
+See discretization of KW-SST for detailed explanations.
+The only difference is there is only equation, thus no assumptions
+need to be made in the construction of the Jacobian.  However, the notation is described below.
+
+Let $\mathbf{B}_\alpha$ be an operator representing the contribution to the lower diagonal term
+of the factorized Jacobian in the $\alpha$ direction. For example, let
+$$
+\phi = a\sa_{i-1} + b\sa_{i} + c\sa_{i+1}
+$$
+Then,
+$$
+\mathbf{B}_\xi(\phi) = \diff{\left(\phi\right)_{i-1,j,k}}{\sa} = a
+$$
+Similary, let $\mathbf{D}_\alpha$ and $\mathbf{S}$ represent the contributions to the
+upper diagonal and diagonal, respectively. Using the same example:
+\begin{align*}
+    \mathbf{D}_\xi(\phi) &= \diff{\left(\phi\right)_{i+1,j,k}}{\sa} = c\\
+    \mathbf{S}(\phi) &= \diff{\left(\phi\right)_{i,j,k}}{\sa} = b
+\end{align*}
+These variable names have been chosen because that is what is used in \texttt{Syn3D}.
+
+\section{Discretization}
+All expansions are done in two dimensions instead of three for the sake of brevity.
+
+%%%%%%%%%%%%%
+% ADVECTION %
+%%%%%%%%%%%%%
+
+\subsection{Advection}
+It should be noted that the advection term appears on the left-hand side of the governing equation,
+thus it needs to be \textit{subtracted} from the residual and Jacobian.
+\begin{equation*}
+    \mathcal{A} = u_j\diff{\sa}{x_j} = u_1\diff{\sa}{x} + u_2\diff{\sa}{y}
+\end{equation*}
+Transforming to computational space:
+\begin{equation*}
+    \mathcal{A} = u_1\diff{\sa}{\xi}\diff{\xi}{x} + u_1\diff{\sa}{\eta}\diff{\eta}{x}
+        + u_2\diff{\sa}{\xi}\diff{\xi}{y} + u_2\diff{\sa}{\eta}\diff{\eta}{y}
+\end{equation*}
+Collecting all the $\xi$ (\textit{i} direction) terms:
+\begin{equation*}
+    \mathcal{A}_\xi = u_1\diff{\sa}{\xi}\diff{\xi}{x} + u_2\diff{\sa}{\xi}\diff{\xi}{y}
+\end{equation*}
+The advection is discretized using a first-order upwinding scheme
+where $q$ determines the flow direction.
+$$
+q = u\diff{\xi}{x} + v\diff{\xi}{y}
+$$
+Then, the advection term in the \textit{i} direction can be written as:
+$$
+\mathcal{A}_\xi = q^+_{i,j} (\sa_{i,j} - \sa_{i-1,j}) + q^-_{i,j}(\sa_{i+1,j} - \sa_{i,j})
+$$
+where
+\begin{align*}
+    q^+ &= \frac{1}{2}\left( q + |q| \right)\\
+    q^- &= \frac{1}{2}\left( q - |q| \right)
+\end{align*}
+
+\subsubsection{Jacobian}
+\begin{align*}
+    \mathbf{B}_\xi(\mathcal{A}_\xi) &= -q^+_{i,j}\\
+    \mathbf{D}_\xi(\mathcal{A}_\xi) &= q^-_{i,j}\\
+    \mathbf{S}_\xi(\mathcal{A}_\xi) &= \left(q^+ - q^-\right)_{i,j}
+\end{align*}
+
+%%%%%%%%%%%%%%
+% PRODUCTION %
+%%%%%%%%%%%%%%
+
+\subsection{Production}
+$$
+\mathcal{P} = C_{b_1}(1 - f_{t_2})\Omega\sa
+$$
+No discretization is required.
+\subsubsection{Jacobian}
+\begin{gather*}
+    \mathbf{B}_\alpha(\mathcal{P}) = \mathbf{D}_\alpha(\mathcal{P}) = 0 \quad \forall ~ \alpha\\
+    \mathbf{S}(\mathcal{P}) = C_{b_1}(1 - f_{t_2})\Omega
+\end{gather*}
+
+%%%%%%%%%%%%%%%
+% DESTRUCTION %
+%%%%%%%%%%%%%%%
+
+\subsection{Destruction}
+\begin{gather*}
+    \mathcal{D} = K_D\cdot \sa^2\\
+    K_D = \cmu\left\{
+        C_{b_1}\left[(1 - f_{t_2})f_{v_2} + f_{t_2}\right]\frac{1}{\kappa^2} - C_{w_1}f_w
+    \right\} \left( \frac{1}{d}\right)^2
+\end{gather*}
+Again, no discretization is required.
+
+\subsubsection{Jacobian}
+\begin{gather*}
+    \mathbf{B}_\alpha(\mathcal{P}) = \mathbf{D}_\alpha(\mathcal{P}) = 0 \quad \forall ~ \alpha\\
+    \mathbf{S}(\mathcal{P}) = 2K_D \cdot \sa_{i,j,k}
+\end{gather*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECOND-ORDER DIFFUSION %
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Second-Order Diffusion}
+\begin{align*}
+    \mathcal{SD} &= \cmu \frac{1}{\sigma}\diff{}{x_j}\left[
+            \left( \sa + \nu \right)\diff{\sa}{x_j}
+    \right] \\
+    &= \cmu\frac{1}{\sigma}\left\{
+        \diff{}{x}\left[
+            \left( \sa + \nu \right)\diff{\sa}{x}
+        \right]
+        +
+        \diff{}{y}\left[
+            \left( \sa + \nu \right)\diff{\sa}{y}
+        \right]
+        +
+        \diff{}{z}\left[
+            \left( \sa + \nu \right)\diff{\sa}{z}
+        \right]
+    \right\}
+\end{align*}
+For brevity, the constant factor $\cmu \frac{1}{\sigma}$ won't be written anymore throughout
+this section.
+
+The terms inside square brackets expand into:
+\newcommand{\qdiff}[4]{\ensuremath{
+    \diff{#1}{#2}\diff{#3}{#4}
+}}
+\newcommand{\sanu}{\ensuremath{\left( \sa + \nu \right)}}
+$$
+    \sanu\diff{\sa}{x_j} = \left( \sa + \nu \right)\left[
+        \qdiff{\sa}{\xi}{\xi}{x_j} + \qdiff{\sa}{\eta}{\eta}{x_j}
+    \right]
+$$
+
+Then:
+\begin{align*}
+  \diff{}{x}\left[
+      \left( \sa + \nu \right)\diff{\sa}{x}
+  \right]
+  &= \overbrace{
+      \qdiff{\xi}{x}{}{\xi}\left[ \sanu \qdiff{\sa}{\xi}{\xi}{x} \right]
+    + \qdiff{\eta}{x}{}{\eta}\left[ \sanu \qdiff{\sa}{\eta}{\eta}{x} \right]
+  }^{\text{retained}}
+  \\
+  &+ \underbrace{
+       \qdiff{\eta}{x}{}{\eta}\left[ \sanu \qdiff{\sa}{\xi}{\xi}{x} \right]
+      + \qdiff{\xi}{x}{}{\xi}\left[ \sanu \qdiff{\sa}{\eta}{\eta}{x} \right]
+  }_{\text{ignored}}
+\end{align*}
+As shown above, terms involving derivatives both in $\xi$ and $\eta$ are neglected. \textit{
+My guess is that this is because it makes the ADI formulation impossible, since it would involve
+a larger stencil -- like in }\texttt{nsflux.f}\textit{ -- than permitted} It can also be said that
+these cross terms have a smaller contribution to the overall diffusion term.
+
+Repeating this above for directions $x, y, z$ and collecting the $\xi$ terms gives:
+$$
+    \mathcal{SD}_\xi =
+      \qdiff{\xi}{x}{}{\xi}\left[ \sanu \qdiff{\sa}{\xi}{\xi}{x} \right]
+    + \qdiff{\xi}{y}{}{\xi}\left[ \sanu \qdiff{\sa}{\xi}{\xi}{y} \right]
+    + \qdiff{\xi}{z}{}{\xi}\left[ \sanu \qdiff{\sa}{\xi}{\xi}{z} \right]
+$$
+Then, let:
+$$
+    \mathcal{SD}_{\xi,x} =
+      \qdiff{\xi}{x}{}{\xi}\left[ \sanu \qdiff{\sa}{\xi}{\xi}{x} \right]
+$$
+We use a flux-like discretization such that:
+\newcommand{\diffxix}{\ensuremath{ \left( \diff{\xi}{x} \right)}}
+\begin{align*}
+    \mathcal{SD}_{xi,x} &= \diffxix_i \left[ F_{i+1/2} - F_{i-1/2} \right]\\
+    F_{i+1/2} &= \left( \sanu \qdiff{\sa}{\xi}{\xi}{x} \right)_{i+1/2}\\
+\end{align*}
+and compute quantities at the face $i+1/2$ using the following:
+\begin{align*}
+    \phi_{i+1/2} &= \frac{1}{2}\left( \phi_{i+1} + \phi_i \right)\\
+    \left(\diff{\phi}{\xi}\right)_{i+1/2} &= \phi_{i+1} - \phi_{i}
+\end{align*}
+Plugging back into $\mathcal{SD}_{\xi,x}$:
+\begin{align*}
+    \mathcal{SD}_{\xi,x} = \diffxix_i
+& \bigg\{
+    \left(\diff{\xi}{x}\right)_{i+1/2} \left[
+      \nu_{i+1/2}\cdot (\sa_{i+1} - \sa_i) + \frac{1}{2}(\sa_{i+1} + \sa_i)(\sa_{i+1} - \sa_i)
+    \right]
+    \\
+    & - \left(\diff{\xi}{x}\right)_{i-1/2} \left[
+      \nu_{i-1/2}\cdot (\sa_{i} - \sa_{i-1}) + \frac{1}{2}(\sa_{i} + \sa_{i-1})(\sa_{i} - \sa_{i-1})
+    \right]
+\bigg\}
+\end{align*}
+
+\subsubsection{Jacobian}
+One can notice that the term $(\sa_{i} + \sa_{i-1})(\sa_{i} - \sa_{i-1})$ is a difference of squares
+factorization. Thus, $\mathcal{SD}_{\xi,x}$ can be rewritten as:
+\begin{align*}
+    \mathcal{SD}_{\xi,x} = \diffxix _i
+& \bigg\{
+    \left(\diff{\xi}{x}\right)_{i+1/2} \left[
+        \nu_{i+1/2}\cdot (\sa_{i+1} - \sa_i) + \frac{1}{2}(\sa_{i+1}^2 - \sa_{i}^2)
+    \right]
+    \\
+    & - \left(\diff{\xi}{x}\right)_{i-1/2} \left[
+      \nu_{i-1/2}\cdot (\sa_{i} - \sa_{i-1}) + \frac{1}{2}(\sa_{i}^2 - \sa_{i-1}^2)
+    \right]
+\bigg\}
+\end{align*}
+Consequently, the Jacobian contributions of $\mathcal{SD}_{\xi,x}$ are:
+\begin{align*}
+    \mathbf{B}_\xi(\mathcal{SD}_\xi,x) &=
+        \diffxix_i \diffxix_{i-1/2} \bigg\{ \nu_{i-1/2} + \sa_{i-1} \bigg\} \\
+    \mathbf{D}_\xi(\mathcal{SD}_\xi,x) &=
+        \diffxix_i \diffxix_{i+1/2} \bigg\{ \nu_{i+1/2} + \sa_{i+1} \bigg\} \\
+    \mathbf{S}_\xi(\mathcal{SD}_\xi,x) &=
+        \diffxix_i \bigg\{
+            \diffxix_{i+1/2} ( -\nu_{i+1/2} - \sa_{i})
+          + \diffxix_{i-1/2} ( -\nu_{i-1/2} - \sa_{i})
+        \bigg\}
+\end{align*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% FIRST-ORDER DIFFUSION %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{First-Order Diffusion}
+\begin{align*}
+    \mathcal{FD} &= \cmu \frac{C_{b_2}}{\sigma} \diff{\sa}{x_i}\diff{\sa}{x_i}\\
+                 &= \cmu \frac{C_{b_2}}{\sigma} \left[
+        \left(\diff{\sa}{x}\right)^2
+        + \left(\diff{\sa}{y}\right)^2
+        + \left(\diff{\sa}{z}\right)^2
+    \right]
+\end{align*}
+For brevity, the constant factor $\cmu \frac{C_{b_2}}{\sigma}$ won't be written anymore throughout
+this section.
+
+Similar to the other terms, transforming to computational space and collecting the $\xi$ terms
+yields:
+$$
+    \mathcal{FD}_\xi = \left( \diff{\sa}{\xi} \right)_i^2 \cdot \underbrace{\left[
+        \left( \diff{\xi}{x} \right)^2
+      + \left( \diff{\xi}{y} \right)^2
+      + \left( \diff{\xi}{z} \right)^2
+    \right]_i}_{COEF}
+$$
+We then approximate the derivative with a central difference:
+$$
+    \left( \diff{\sa}{\xi} \right)_i = \frac{1}{2}( \sa_{i+1} - \sa_{i-1} )
+$$
+Thus:
+$$
+    \mathcal{FD}_\xi = COEF\cdot \frac{1}{4} \left(
+        \sa_{i+1}^2 - 2\sa_{i+1}\sa_{i-1} + \sa_{i-1}^2
+    \right)
+$$
+
+\subsubsection{Jacobian}
+\begin{align*}
+    \mathbf{B}_\xi(\mathcal{FD}_\xi) &= COEF\cdot\frac{1}{2}(\sa_{i-1} - \sa_{i+1})\\
+    \mathbf{D}_\xi(\mathcal{FD}_\xi) &= COEF\cdot\frac{1}{2}(\sa_{i+1} - \sa_{i-1})\\
+    \mathbf{S}_\alpha(\mathcal{FD}_\alpha) &= 0 \quad \forall ~ \alpha
+\end{align*}
+
+\end{document}

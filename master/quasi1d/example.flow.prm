@@ -1,0 +1,9 @@
+&dat
+ params%flx_scheme=4,
+ params%timestep_scheme=1,
+ params%nx=50,
+ params%p_exit_ratio=0.8,
+ params%eps=0.5,
+ params%tol=1e-15,
+ params%max_iter=5000,
+ params%cfl=0.4/

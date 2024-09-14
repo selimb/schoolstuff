@@ -1,0 +1,200 @@
+\documentclass{SelimArticle}
+\input{./options}
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\begin{document}
+\maketitle
+% Begin writing here.
+\newcommand{\kw}{$k-\omega$}
+\section{Dimensionless Variables}
+\newcommand{\pinf}{\ensuremath{P_\infty}}
+\newcommand{\rinf}{\ensuremath{\rho_\infty}}
+\newcommand{\minf}{\ensuremath{\mu_\infty}}
+\newcommand{\pri}{\ensuremath{\pinf/\rinf}}
+\subsection{Current State}
+The Navier-Stokes momentum equations in \texttt{Syn3D} are currently non-dimensionalized
+as follows, where $\overline{\phi}$ and $\phi$ are dimensional and dimensionless, respectively:
+\begin{gather*}
+    \rho = \frac{\overline{\rho}}{\rinf}
+    \qquad u = \frac{\overline{u}}{\sqrt{\pri}}
+    \qquad P = \frac{\overline{P}}{\pinf}
+    \\
+    \mu_V = \frac{\overline{\mu_V}}{\minf}
+    \qquad t = \frac{\overline{t}\cdot\sqrt{\pri}}{c}
+    \qquad x = \frac{\overline{x}}{c}
+\end{gather*}
+where $c$ is the chord length, also often referred to as the reference length $L$.
+
+\subsection{Turbulent Quantities}
+The \kw equations also have to be non-dimensionalized and it has to be consistent with the
+Navier-Stokes equations. Both the NASA Turbulence Modeling Resource and \texttt{CFL3D}
+use the following:
+\begin{gather*}
+    \mu_T = \frac{\overline{\mu}_T}{\minf}
+    \qquad k = \frac{\overline{k}}{a_\infty^2}
+    \qquad \omega = \frac{\overline{\omega}\minf}{\rinf a_\infty^2}
+    \qquad \Omega = \frac{\overline{\Omega}c}{a_\infty}
+\end{gather*}
+where $a$ is the speed of sound.
+
+The above needs to be slightly tweaked to match \texttt{Syn3D}. In fact, replacing
+occurences of $a$ with $\sqrt{\pri}$ is all that is necessary, since those two are related
+by a factor of $\sqrt{\gamma}$. Consequently, we can expect the nondimensionalized equations
+to be very similar, only varying by factors of $\sqrt{\gamma}$.
+
+The following nondimensionalization is then used:
+\begin{gather*}
+    \mu_T = \frac{\overline{\mu}_T}{\minf}
+    \qquad k = \frac{\overline{k}}{\pri}
+    \qquad \omega = \frac{\overline{\omega}\minf}{\rinf\pri}
+    \\
+    d = \frac{\overline{d}}{c}
+    \qquad \Omega = \frac{\overline{\Omega}c}{\sqrt{\pri}}
+\end{gather*}
+
+\section{Nondimensionalized Equations}
+In order for the equations to take unitless quantities as inputs and
+also return unitless quantities, the dimensionless variables defined above need to be
+substituted into the governing equations. In other words, one cannot solve dimensional equations
+using dimensionless variables. The derivation is not shown here.
+\subsection{Navier-Stokes}
+\newcommand{\diff}[2]{\ensuremath{
+    \frac{\partial #1}{\partial #2}
+}}
+\newcommand{\cmu}{\ensuremath{
+    \sqrt{\gamma}\frac{M_\infty}{\mathit{Re}}
+}}
+The equations are slightly simplified to remain concise. While this is not technically part
+of the nondimensionalization, it should be noted that the Boussinesq approximation is used and
+the terms associated with molecular diffusion and turbulent transport in the energy equation
+are neglected (see NASA's website).
+\begin{gather}
+    \diff{\rho}{t} + \diff{(\rho u)}{x} = 0\\
+    \diff{( \rho u )}{t} + \diff{(\rho u u)}{x} = -\diff{P}{x}
+        + \cmu\diff{}{x}\left( (\mu_V + \mu_T) \diff{u}{x} \right)
+\end{gather}
+\begin{align}
+\begin{split}
+    \diff{(\rho E)}{t} + \diff{(\rho u E + uP)}{x} =&
+        \cmu\diff{}{x}\left[ (\mu_V + \mu_T)u\diff{u}{x} \right ]
+    \\
+    &- \cmu\diff{}{x}\left[
+        \left(\frac{\mu_V}{\mathit{Pr}} + \frac{\mu_T}{\mathit{Pr}_T}\right)
+        \frac{\gamma}{\gamma - 1}\diff{(P/\rho)}{x}
+    \right ]
+\end{split}
+\end{align}
+The term $\cmu$ comes from the chosen nondimensionalization.
+
+\subsection{K-$\omega$ SST}
+Not only must one nondimensionalize the transport equations, but it is necessary to perform
+the same for the boundary conditions and additional functions.
+\subsubsection{Transport Equations}
+\begin{align}
+    \rho\diff{k}{t} + \rho u \diff{k}{x} =& \cmu \mu_T \Omega^2 -
+        - \left(\cmu\right)^{-1}\beta^*\rho k\omega
+        + \cmu\diff{}{x}\left[ \left(\mu_V + \sigma_k\mu_T\right)\diff{k}{x} \right]\\
+    \begin{split}
+    \rho\diff{\omega}{t} + \rho u \diff{\omega}{x} =& \cmu\rho\gamma\Omega^2
+        - \left(\cmu\right)^{-1}\beta^*\rho\omega^2
+        + \cmu\diff{}{x}\left[ \left(\mu_V + \sigma_k\mu_T\right)\diff{\omega}{x} \right]\\
+        &+ \cmu 2(1 - F_1)\frac{\rho \sigma}{\omega}\diff{k}{x}\diff{\omega}{x}
+    \end{split}
+\end{align}
+\subsubsection{Additional Functions}
+The turbulent eddy viscosity is computed from:
+\begin{equation}
+    \mu_T = \min\left(
+        \frac{\rho k}{\omega},
+        \left(\cmu\right)^{-1}\frac{\rho a_1 k}{\Omega F_2}
+    \right)
+\end{equation}
+Blending functions are given by:
+\begin{align*}
+    F_1 = \tanh(arg_1^4)\quad &; \quad arg_1
+        = \min\left[\max(\Gamma_1, \Gamma_2), \Gamma_3 \right]
+    \\
+    F_2 = \tanh(arg_2^2)\quad &; \quad arg_2 = \max\left(2\Gamma_1, \Gamma_1\right)
+\end{align*}
+where
+\begin{align}
+    \Gamma_1 &= \cmu \frac{\sqrt{k}}{\omega d}\\
+    \Gamma_2 &= \left(\cmu\right)^2 \frac{500\mu_V}{\rho d^2 \omega}\\
+    \Gamma_3 &= \frac{\pinf}{c^2}\frac{4\rho k}{\text{CD} d^2}\\
+    \text{CD}       &= \max\left(
+        \frac{\pinf}{c^2}2\rho\sigma\frac{1}{\omega}\diff{k}{x}\diff{\omega}{x},
+        10^{-20}
+    \right)
+\end{align}
+\textbf{The factors in $\text{CD}$ and $\Gamma_3$ are neglected since the solver sets
+\pinf and $c$ to 1.  A note of this is also present in the code.}
+\subsubsection{Boundary Conditions}
+Freestream BCs for the flat plate case are
+\begin{align}
+    k_{farfield} &= 9\cdot10^{-9}\\
+    \omega_{farfield} &= 10^{-6}
+\end{align}
+Viscous wall BCs are given as:
+\begin{align}
+    \omega_{wall} &= \left(\cmu\right)^2 60\frac{\mu_V}{\beta_1\rho d^2}\\
+    k_{wall} &= 0
+\end{align}
+
+\subsubsection{Implementation}
+The implementation is straight forward. However, it is relevant to note that both
+$\mu_V$ and $\mu_T$ are injected with $\cmu$. This was originally done with $\mu_V$ in
+\texttt{viscf.f}.
+
+In other words, one can let:
+\begin{align}
+    \hat{\mu}_V &= \cmu\mu_V\\
+    \hat{\mu}_T &= \cmu\mu_T
+\end{align}
+These can be substituted in the nondimensionalized equations/functions/BCs above.
+
+\subsection{Spalart-Allmaras}
+\newcommand{\sa}{\ensuremath{\hat{\nu}}}
+The Spalart-Allmaras model solves for a variable \sa ~ related to the eddy viscosity
+through
+\begin{equation}
+    \mu_T = \rho\sa f_{v_1}
+\end{equation}
+where
+\begin{align}
+    f_{v_1} &= \frac{\chi^3}{\chi^3 + C_{v_1}^3}\\
+    \chi &= \frac{\sa}{\nu}
+\end{align}
+\subsubsection{Transport Equation}
+\begin{align}
+\begin{split}
+    \diff{\sa}{t} + u\diff{\sa}{x} =~ &C_{b_1}(1 - f_{t_2})\Omega\sa\\
+        &+ \cmu\left\{
+            C_{b_1}\left[(1 - f_{t_2})f_{v_2} + f_{t_2}\right]\frac{1}{\kappa^2} - C_{w_1}f_w
+        \right\} \left(\frac{\sa}{d}\right)^2\\
+        &+ \cmu \frac{1}{\sigma}\diff{}{x}\left[
+            \left(\sa + (1 + C_{b_2})\sa\right)\diff{\sa}{x}
+        \right]\\
+        &+ \cmu \frac{C_{b_2}}{\sigma}\left(\diff{\sa}{x}\right)^2
+\end{split}
+\end{align}
+The terms are grouped slightly differently than in the original reference because of the common
+factors. This is done in CFL3D.
+\subsubsection{Additional Functions}
+Only the functions that end up with an additional factor are shown.
+\begin{align}
+\begin{split}
+    r &= \min(r_1, 10)\\
+    r_1 &= \frac{1}{\left(\cmu\right)^{-1}\frac{\Omega d^2 \kappa^2}{\sa} + f_{v_2}}
+\end{split}
+\end{align}
+To look more like the original definition of $r$, this can be written as:
+\begin{align}
+    r &= \min\left(\dfrac{\sa}{\left(\cmu\right)^{-1}\hat{S}\kappa^2d^2}, 10\right)\\
+    \hat{S} &= \Omega + \cmu\frac{\sa f_{v_2}}{\kappa^2 d^2}
+\end{align}
+\subsubsection{Boundary Conditions}
+The boundary conditions are:
+\begin{align}
+    \sa_{wall} &= 0\\
+    \sa_{far}  &= 3~ \text{to}~ 5
+\end{align}
+\end{document}
